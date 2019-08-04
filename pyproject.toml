@@ -1,0 +1,10 @@
+[build-system]
+requires = ["flit"]
+build-backend = "flit.buildapi"
+
+[tool.flit.metadata]
+module = "wodoo"
+author = "ACSONE SA/NV"
+author-email = "info@acsone.eu"
+classifiers = ["License :: OSI Approved :: MIT License"]
+

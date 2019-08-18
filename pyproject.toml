@@ -7,7 +7,7 @@ module = "wodoo"
 author = "ACSONE SA/NV"
 author-email = "info@acsone.eu"
 classifiers = ["License :: OSI Approved :: MIT License"]
-requires = ["setuptools-odoo", "wheel"]
+requires = ["pep517", "setuptools-odoo", "wheel"]
 
 [tool.flit.scripts]
 wodoo = "wodoo.cli:main"

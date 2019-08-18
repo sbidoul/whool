@@ -65,7 +65,7 @@ def _read_metadata(dst):
 def _prepare_wheel_metadata():
     msg = Message()
     msg["Wheel-Version"] = "1.0"  # of the spec
-    msg["Generator"] = "wodoo " + __version__
+    msg["Generator"] = "Wodoo " + __version__
     msg["Root-Is-Purelib"] = "true"
     msg["Tag"] = TAG
     return msg

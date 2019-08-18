@@ -2,7 +2,9 @@ import argparse
 import os
 import subprocess
 import sys
+import sysconfig
 import tempfile
+import textwrap
 
 from pep517.build import build as pep517_build
 
@@ -11,17 +13,35 @@ from .buildapi import _make_dist_info, _prepare_package_metadata
 
 
 def _get_purelib(python):
-    if python != sys.executable:
-        # TODO (ses how flit _get_dirs does it)
+    if python == sys.executable:
+        return sysconfig.get_paths()["purelib"]
+    return subprocess.check_output(
+        [python, "-c", "import sysconfig; print(sysconfig.get_paths()['purelib'])"],
+        universal_newlines=True,
+    ).strip()
+
+
+def init(source_dir):
+    pyproject_path = os.path.join(source_dir, "pyproject.toml")
+    if not os.path.exists(pyproject_path):
+        with open(pyproject_path, "w") as f:
+            f.write(
+                textwrap.dedent(
+                    """\
+                        [build-system]
+                        requires = ["wodoo"]
+                        build-backend = "wodoo.buildapi
+                    """
+                )
+            )
+    else:
+        # TODO inject build-system into pyproject.toml if not yet present
         raise NotImplementedError()
-    import sysconfig
-
-    return sysconfig.get_paths()["purelib"]
 
 
-def install(python):
+def install(source_dir, python):
     with tempfile.TemporaryDirectory() as tmpdir:
-        pep517_build(".", "wheel", tmpdir)
+        pep517_build(source_dir, "wheel", tmpdir)
         wheel = None
         # find generated wheel, the only file in tmpdir
         for f in os.listdir(tmpdir):
@@ -33,8 +53,8 @@ def install(python):
         )
 
 
-def install_symlink(python):
-    metadata = _prepare_package_metadata(".")
+def install_symlink(source_dir, python):
+    metadata = _prepare_package_metadata(source_dir)
     _make_dist_info(_get_purelib(), metadata)
     # TODO via wheel to prepare RECORD?
     # TODO add symlink in odoo/addons/addon
@@ -44,6 +64,7 @@ def install_symlink(python):
 
 
 def main():
+    source_dir = "."
     ap = argparse.ArgumentParser(
         description="The Wodoo CLI is a thin wrapper around standard python tools "
         "to build and install pep517 compliant packages. It's most useful "
@@ -51,6 +72,9 @@ def main():
     )
     ap.add_argument("-V", "--version", action="version", version="Wodoo " + __version__)
     subparsers = ap.add_subparsers(title="subcommands", dest="subcmd")
+    subparsers.add_parser(
+        "init", help="Initialize pyproject.toml with the wodoo build-system."
+    )
     parser_install = subparsers.add_parser(
         "install",
         help="Install the addon. "
@@ -75,32 +99,21 @@ def main():
         "build",
         help="Build the addon. A trivial a wrapper around 'python -m pep517.build'.",
     )
-    parser_build.add_argument("--binary", "-b", action="store_true", default=False)
-    parser_build.add_argument("--source", "-s", action="store_true", default=False)
     parser_build.add_argument(
-        "--out-dir", "-o", help="Destination in which to save the builds"
+        "--out-dir", "-o", required=True, help="Destination in which to save the build."
     )
 
     args = ap.parse_args(sys.argv[1:])
 
-    if args.subcmd == "install":
+    if args.subcmd == "init":
+        init(source_dir)
+    elif args.subcmd == "install":
         if args.symlink:
-            install_symlink(args.python)
+            install_symlink(source_dir, args.python)
         else:
-            install(args.python)
+            install(source_dir, args.python)
     elif args.subcmd == "build":
-        # determine which dists to build
-        dists = list(
-            filter(
-                None,
-                (
-                    "sdist" if args.source or not args.binary else None,
-                    "wheel" if args.binary or not args.source else None,
-                ),
-            )
-        )
-        for dist in dists:
-            pep517_build(".", dist, args.out_dir)
+        pep517_build(source_dir, "wheel", args.out_dir)
     else:
         ap.print_help()
         sys.exit(1)

@@ -10,7 +10,6 @@ import textwrap
 from pep517.build import build as pep517_build
 
 from . import __version__
-from .buildapi import _make_dist_info, _prepare_package_metadata
 
 
 def _get_purelib(python):
@@ -55,8 +54,6 @@ def install(source_dir, python):
 
 
 def install_symlink(source_dir, python):
-    metadata = _prepare_package_metadata(source_dir)
-    _make_dist_info(_get_purelib(), metadata)
     # TODO via wheel to prepare RECORD?
     # TODO add symlink in odoo/addons/addon
     # TODO add odoo, addons, addon in RECORD

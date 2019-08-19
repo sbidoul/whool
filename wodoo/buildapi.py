@@ -1,15 +1,12 @@
 from email.generator import Generator
 from email.message import Message
-from email.parser import Parser
 import os
 from pathlib import Path
 import shutil
 import subprocess
 import tempfile
 
-from setuptools_odoo.core import (
-    _prepare_odoo_addon_metadata as _prepare_setuptools_metadata,
-)
+from setuptools_odoo import get_addon_metadata
 from wheel.wheelfile import WheelFile
 
 from . import __version__
@@ -52,14 +49,9 @@ def _copy_to(dst):
             shutil.copy(f, dstd)
 
 
-def _write_metadata(src, msg):
-    with open(src, "w") as f:
-        Generator(f, maxheaderlen=0).flatten(msg)
-
-
-def _read_metadata(dst):
-    with open(dst, "r") as f:
-        return Parser.parsestr(f.read())
+def _write_metadata(path, msg):
+    with open(path, "w", encoding="utf-8") as out:
+        Generator(out, mangle_from_=False, maxheaderlen=0).flatten(msg)
 
 
 def _prepare_wheel_metadata():
@@ -71,21 +63,9 @@ def _prepare_wheel_metadata():
     return msg
 
 
-def _prepare_package_metadata(addon_dir):
-    smeta = _prepare_setuptools_metadata(addon_dir)
-    msg = Message()
-    msg["Metadata-Version"] = "1.0"
-    msg["Name"] = smeta.get("name")
-    msg["Version"] = smeta.get("version")
-    # Summary
-    # Description
-    # ...
-    return msg
-
-
 def _make_dist_info(metadata, dst):
     distinfo_dirname = "{}-{}.dist-info".format(
-        metadata["name"].replace("-", "_"), metadata["version"]
+        metadata["Name"].replace("-", "_"), metadata["Version"]
     )
     distinfo_path = Path(dst) / distinfo_dirname
     distinfo_path.mkdir()
@@ -104,9 +84,9 @@ def build_wheel(wheel_directory, config_settings=None, metadata_directory=None):
     # TODO!!! because pip copies from the root.
     # TODO!!! python -m pep517.build works fine because it builds in place.
     addon_name = Path.cwd().name
-    metadata = _prepare_package_metadata(addon_dir)
+    metadata = get_addon_metadata(addon_dir)
     wheel_name = "{}-{}-{}.whl".format(
-        metadata["name"].replace("-", "_"), metadata["version"], TAG
+        metadata["Name"].replace("-", "_"), metadata["Version"], TAG
     )
     with tempfile.TemporaryDirectory() as tmpdir:
         tmppath = Path(tmpdir)

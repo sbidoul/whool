@@ -1,28 +1,30 @@
 import argparse
 import logging
 import os
+from pathlib import Path
 import subprocess
 import sys
 import sysconfig
 import tempfile
 import textwrap
 
-from pep517.build import build as pep517_build
-
 from . import __version__
+from .buildapi import _build_wheel
 
 
-def _get_purelib(python):
+def _get_purelib_path(python):
     if python == sys.executable:
-        return sysconfig.get_paths()["purelib"]
-    return subprocess.check_output(
-        [python, "-c", "import sysconfig; print(sysconfig.get_paths()['purelib'])"],
-        universal_newlines=True,
-    ).strip()
+        return Path(sysconfig.get_paths()["purelib"])
+    return Path(
+        subprocess.check_output(
+            [python, "-c", "import sysconfig; print(sysconfig.get_paths()['purelib'])"],
+            universal_newlines=True,
+        ).strip()
+    )
 
 
-def init(source_dir):
-    pyproject_path = os.path.join(source_dir, "pyproject.toml")
+def init(addon_dir):
+    pyproject_path = os.path.join(addon_dir, "pyproject.toml")
     if not os.path.exists(pyproject_path):
         with open(pyproject_path, "w") as f:
             f.write(
@@ -39,26 +41,31 @@ def init(source_dir):
         raise NotImplementedError()
 
 
-def install(source_dir, python):
+def install(addon_dir, python):
     with tempfile.TemporaryDirectory() as tmpdir:
-        pep517_build(source_dir, "wheel", tmpdir)
-        wheel = None
-        # find generated wheel, the only file in tmpdir
-        for f in os.listdir(tmpdir):
-            assert not wheel
-            assert f.endswith(".whl")
-            wheel = f
+        wheel_name = _build_wheel(addon_dir, tmpdir)
         subprocess.check_call(
-            [python, "-m", "pip", "install", os.path.join(tmpdir, wheel)]
+            [python, "-m", "pip", "install", os.path.join(tmpdir, wheel_name)]
         )
 
 
-def install_symlink(source_dir, python):
-    # TODO via wheel to prepare RECORD?
-    # TODO add symlink in odoo/addons/addon
-    # TODO add odoo, addons, addon in RECORD
-    # TODO !!! pip uninstall does not remove the symlink (pip bug)
-    raise NotImplementedError()
+def install_symlink(addon_dir, python):
+    with tempfile.TemporaryDirectory() as tmpdir:
+        wheel_name, dist_info_dirname, addon_name = _build_wheel(
+            addon_dir, tmpdir, dist_info_only=True
+        )
+        subprocess.check_call(
+            [python, "-m", "pip", "install", os.path.join(tmpdir, wheel_name)]
+        )
+        purelib_path = _get_purelib_path(python)
+        odoo_addons_path = purelib_path / "odoo" / "addons"
+        if not odoo_addons_path.exists():
+            odoo_addons_path.mkdir(parents=True)
+        addon_path = odoo_addons_path / addon_name
+        addon_path.symlink_to(os.path.abspath(addon_dir))
+        record_path = purelib_path / dist_info_dirname / "RECORD"
+        with record_path.open("a") as f:
+            f.write("odoo/addons/{},,\n".format(addon_name))
 
 
 def main():
@@ -76,17 +83,18 @@ def main():
         help="Verbosity level (default: warnings, once: info, twice: debug).",
     )
     ap.add_argument(
-        "-s",
-        "--source-dir",
+        "--addon-dir",
         default=".",
         help="The addon directory, where __manifest__.py and pyproject.toml are "
         "(default: current directory).",
     )
+    # --addons-dir
     subparsers = ap.add_subparsers(title="subcommands", dest="subcmd")
     subparsers.add_parser(
         "init",
-        help="Initialize pyproject.toml in SOURCE_DIR with the wodoo build-system.",
+        help="Initialize pyproject.toml in addon_dir with the wodoo build-system.",
     )
+    # TODO init --commit
     parser_install = subparsers.add_parser(
         "install",
         help="Install the addon. "
@@ -104,12 +112,12 @@ def main():
     )
     parser_install.add_argument(
         "--python",
-        default=sys.executable,
-        help="Target Python executable, if different from the one running Wodoo.",
+        help="Target Python executable. If not set, use the python of the "
+        "active current virtualenv, or else the python running wodoo.",
     )
     parser_build = subparsers.add_parser(
         "build",
-        help="Build the addon. A trivial a wrapper around 'python -m pep517.build'.",
+        help="Build the addon. A trivial alternative to 'python -m pep517.build'.",
     )
     parser_build.add_argument(
         "--out-dir", "-o", required=True, help="Destination in which to save the build."
@@ -125,15 +133,23 @@ def main():
         log_level = logging.WARN
     logging.basicConfig(level=log_level)
 
+    python = args.python
+    if not python:
+        venv = os.environ.get("VIRTUAL_ENV")
+        if venv:
+            python = os.path.join(venv, "bin", "python")
+        else:
+            python = sys.executable
+
     if args.subcmd == "init":
-        init(args.source_dir)
+        init(args.addon_dir)
     elif args.subcmd == "install":
         if args.symlink:
-            install_symlink(args.source_dir, args.python)
+            install_symlink(args.addon_dir, args.python)
         else:
-            install(args.source_dir, args.python)
+            install(args.addon_dir, args.python)
     elif args.subcmd == "build":
-        pep517_build(args.source_dir, "wheel", args.out_dir)
+        _build_wheel(args.addon_dir, args.out_dir)
     else:
         ap.print_help()
         sys.exit(1)

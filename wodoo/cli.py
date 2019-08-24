@@ -66,12 +66,15 @@ def install_symlink(addon_dir, python):
         record_path = purelib_path / dist_info_dirname / "RECORD"
         with record_path.open("a") as f:
             f.write("odoo/addons/{},,\n".format(addon_name))
+        installer_path = purelib_path / dist_info_dirname / "INSTALLER"
+        with installer_path.open("w") as f:
+            f.write("wodoo")
 
 
 def main():
     ap = argparse.ArgumentParser(
-        description="The Wodoo CLI is a thin wrapper around standard python tools "
-        "to build and install pep517 compliant packages. It's most useful "
+        description="The Wodoo CLI is a set of usefull commands to work "
+        "with pep 517 compliant Odoo addons. It's most useful "
         "use case as of fall 2019 is 'wodoo install --symlink'."
     )
     ap.add_argument("-V", "--version", action="version", version="Wodoo " + __version__)

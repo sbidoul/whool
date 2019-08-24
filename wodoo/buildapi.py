@@ -7,6 +7,7 @@ import subprocess
 import tempfile
 
 from setuptools_odoo import get_addon_metadata
+import toml
 from wheel.wheelfile import WheelFile
 
 from . import __version__
@@ -20,6 +21,14 @@ class UnsupportedOperation(NotImplementedError):
 
 class NoScmFound(Exception):
     pass
+
+
+def _load_pyproject_toml(addon_dir):
+    pyproject_toml_path = os.path.join(addon_dir, "pyproject.toml")
+    if os.path.exists(pyproject_toml_path):
+        with open(pyproject_toml_path) as f:
+            return toml.load(f)
+    return {}
 
 
 def _scm_ls_files(addon_dir):
@@ -92,8 +101,20 @@ def _get_wheel_name(metadata):
 
 
 def _get_metadata(addon_dir):
-    # TODO get_addon_metadata arguments from pyproject.toml
-    return get_addon_metadata(addon_dir)
+    options = (
+        _load_pyproject_toml(addon_dir)
+        .get("tool", {})
+        .get("wodoo", {})
+        .get("options", {})
+    )
+    return get_addon_metadata(
+        addon_dir,
+        depends_override=options.get("depends_override", {}),
+        external_dependencies_override=options.get(
+            "external_dependencies_override", {}
+        ),
+        odoo_version_override=options.get("odoo_version_override"),
+    )
 
 
 def _build_wheel(addon_dir, wheel_directory, dist_info_only=False):

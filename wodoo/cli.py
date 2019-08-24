@@ -133,21 +133,20 @@ def main():
         log_level = logging.WARN
     logging.basicConfig(level=log_level)
 
-    python = args.python
-    if not python:
-        venv = os.environ.get("VIRTUAL_ENV")
-        if venv:
-            python = os.path.join(venv, "bin", "python")
-        else:
-            python = sys.executable
-
     if args.subcmd == "init":
         init(args.addon_dir)
     elif args.subcmd == "install":
+        python = args.python
+        if not python:
+            venv = os.environ.get("VIRTUAL_ENV")
+            if venv:
+                python = os.path.join(venv, "bin", "python")
+            else:
+                python = sys.executable
         if args.symlink:
-            install_symlink(args.addon_dir, args.python)
+            install_symlink(args.addon_dir, python)
         else:
-            install(args.addon_dir, args.python)
+            install(args.addon_dir, python)
     elif args.subcmd == "build":
         _build_wheel(args.addon_dir, args.out_dir)
     else:

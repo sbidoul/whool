@@ -43,7 +43,7 @@ def init(addon_dir):
 
 def install(addon_dir, python):
     with tempfile.TemporaryDirectory() as tmpdir:
-        wheel_name = _build_wheel(addon_dir, tmpdir)
+        wheel_name, _, _ = _build_wheel(addon_dir, tmpdir)
         subprocess.check_call(
             [python, "-m", "pip", "install", os.path.join(tmpdir, wheel_name)]
         )
@@ -88,7 +88,7 @@ def main():
         help="The addon directory, where __manifest__.py and pyproject.toml are "
         "(default: current directory).",
     )
-    # --addons-dir
+    # TODO --addons-dir
     subparsers = ap.add_subparsers(title="subcommands", dest="subcmd")
     subparsers.add_parser(
         "init",

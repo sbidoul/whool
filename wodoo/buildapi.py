@@ -14,7 +14,7 @@ from . import __version__
 TAG = "py3-none-any"
 
 
-class UnsupportedOperation(Exception):
+class UnsupportedOperation(NotImplementedError):
     pass
 
 
@@ -22,10 +22,12 @@ class NoScmFound(Exception):
     pass
 
 
-def _scm_ls_files():
+def _scm_ls_files(addon_dir):
     try:
         return (
-            subprocess.check_output(["git", "ls-files"], universal_newlines=True)
+            subprocess.check_output(
+                ["git", "ls-files"], universal_newlines=True, cwd=addon_dir
+            )
             .strip()
             .split()
         )
@@ -33,15 +35,15 @@ def _scm_ls_files():
         raise NoScmFound()
 
 
-def _copy_to(dst):
+def _copy_to(addon_dir, dst):
     try:
-        scm_files = _scm_ls_files()
+        scm_files = _scm_ls_files(addon_dir)
     except NoScmFound:
         # TODO DO NOT UNCOMMENT, until pip builds in place.
         # TODO In case pip copies, this will crash because of
         # TODO missing .git directory. If it would not crash
         # TODO the addon name would be wrong because cwd is a temp dir.
-        # shutil.copytree(".", dst)
+        # shutil.copytree(addon_dir, dst)
         raise
     else:
         os.mkdir(dst)
@@ -50,7 +52,7 @@ def _copy_to(dst):
             dstd = os.path.join(dst, d)
             if not os.path.isdir(dstd):
                 os.makedirs(dstd)
-            shutil.copy(f, dstd)
+            shutil.copy(os.path.join(addon_dir, f), dstd)
 
 
 def _write_metadata(path, msg):
@@ -95,7 +97,7 @@ def _get_metadata(addon_dir):
 
 
 def _build_wheel(addon_dir, wheel_directory, dist_info_only=False):
-    addon_name = _get_addon_name(Path.cwd())
+    addon_name = _get_addon_name(addon_dir)
     metadata = _get_metadata(addon_dir)
     wheel_name = _get_wheel_name(metadata)
     with tempfile.TemporaryDirectory() as tmpdir:
@@ -103,7 +105,7 @@ def _build_wheel(addon_dir, wheel_directory, dist_info_only=False):
         if not dist_info_only:
             odoo_addon_path = Path(tmpdir) / "odoo" / "addons"
             odoo_addon_path.mkdir(parents=True)
-            _copy_to(odoo_addon_path / addon_name)
+            _copy_to(addon_dir, odoo_addon_path / addon_name)
         with WheelFile(os.path.join(wheel_directory, wheel_name), "w") as wf:
             wf.write_files(tmpdir)
     return wheel_name, dist_info_dirname, addon_name

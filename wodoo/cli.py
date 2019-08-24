@@ -73,7 +73,7 @@ def install_symlink(addon_dir, python):
 
 def main():
     ap = argparse.ArgumentParser(
-        description="The Wodoo CLI is a set of usefull commands to work "
+        description="The Wodoo CLI is a set of useful commands to work "
         "with pep 517 compliant Odoo addons. It's most useful "
         "use case as of fall 2019 is 'wodoo install --symlink'."
     )
@@ -83,7 +83,7 @@ def main():
         "-v",
         action="count",
         default=0,
-        help="Verbosity level (default: warnings, once: info, twice: debug).",
+        help="Verbosity level (default: warn, once: info, twice: debug).",
     )
     ap.add_argument(
         "--addon-dir",
@@ -116,7 +116,7 @@ def main():
     parser_install.add_argument(
         "--python",
         help="Target Python executable. If not set, use the python of the "
-        "active current virtualenv, or else the python running wodoo.",
+        "active current virtualenv, or else the python ronunning wodoo.",
     )
     parser_build = subparsers.add_parser(
         "build",

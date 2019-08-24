@@ -52,7 +52,7 @@ def install(addon_dir, python):
 def install_symlink(addon_dir, python):
     with tempfile.TemporaryDirectory() as tmpdir:
         wheel_name, dist_info_dirname, addon_name = _build_wheel(
-            addon_dir, tmpdir, dist_info_only=True
+            addon_dir, tmpdir, dist_info_only=True, local_version_identifier="symlink"
         )
         subprocess.check_call(
             [python, "-m", "pip", "install", os.path.join(tmpdir, wheel_name)]

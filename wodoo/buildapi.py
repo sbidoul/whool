@@ -100,14 +100,14 @@ def _get_wheel_name(metadata):
     )
 
 
-def _get_metadata(addon_dir):
+def _get_metadata(addon_dir, local_version_identifier=None):
     options = (
         _load_pyproject_toml(addon_dir)
         .get("tool", {})
         .get("wodoo", {})
         .get("options", {})
     )
-    return get_addon_metadata(
+    metadata = get_addon_metadata(
         addon_dir,
         depends_override=options.get("depends_override", {}),
         external_dependencies_override=options.get(
@@ -115,11 +115,20 @@ def _get_metadata(addon_dir):
         ),
         odoo_version_override=options.get("odoo_version_override"),
     )
+    if local_version_identifier:
+        metadata.replace_header(
+            "Version", metadata["Version"] + "+" + local_version_identifier
+        )
+    return metadata
 
 
-def _build_wheel(addon_dir, wheel_directory, dist_info_only=False):
+def _build_wheel(
+    addon_dir, wheel_directory, dist_info_only=False, local_version_identifier=None
+):
     addon_name = _get_addon_name(addon_dir)
-    metadata = _get_metadata(addon_dir)
+    metadata = _get_metadata(
+        addon_dir, local_version_identifier=local_version_identifier
+    )
     wheel_name = _get_wheel_name(metadata)
     with tempfile.TemporaryDirectory() as tmpdir:
         dist_info_dirname = _make_dist_info(metadata, tmpdir)

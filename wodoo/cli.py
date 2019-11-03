@@ -8,6 +8,8 @@ import tempfile
 import textwrap
 from pathlib import Path
 
+import toml
+
 from . import __version__
 from .buildapi import _build_wheel
 
@@ -23,22 +25,37 @@ def _get_purelib_path(python):
     )
 
 
+BUILD_SYSTEM_TOML = textwrap.dedent(
+    """\
+        [build-system]
+        requires = ["wodoo"]
+        build-backend = "wodoo.buildapi"
+    """
+)
+
+
 def init(addon_dir):
-    pyproject_path = os.path.join(addon_dir, "pyproject.toml")
-    if not os.path.exists(pyproject_path):
-        with open(pyproject_path, "w") as f:
-            f.write(
-                textwrap.dedent(
-                    """\
-                        [build-system]
-                        requires = ["wodoo"]
-                        build-backend = "wodoo.buildapi
-                    """
-                )
-            )
+    pyproject_toml_path = os.path.join(addon_dir, "pyproject.toml")
+    if not os.path.exists(pyproject_toml_path):
+        with open(pyproject_toml_path, "w") as f:
+            f.write(BUILD_SYSTEM_TOML)
     else:
-        # TODO inject build-system into pyproject.toml if not yet present
-        raise NotImplementedError()
+        with open(pyproject_toml_path, "r") as f:
+            pyproject_toml = toml.load(f)
+        if "build-system" in pyproject_toml:
+            if (
+                pyproject_toml.get("build-system").get("build-backend")
+                != "wodoo.build-api"
+            ):
+                print(
+                    f"Did not initialize Wodoo build-system in {pyproject_toml_path} "
+                    f"because another one is already defined.",
+                    file=sys.stderr,
+                )
+        else:
+            with open(pyproject_toml_path, "a") as f:
+                f.write("\n")
+                f.write(BUILD_SYSTEM_TOML)
 
 
 def install(addon_dir, python):
@@ -136,8 +153,10 @@ def main():
         log_level = logging.WARN
     logging.basicConfig(level=log_level)
 
+    addon_dir = os.path.realpath(args.addon_dir)
+
     if args.subcmd == "init":
-        init(args.addon_dir)
+        init(addon_dir)
     elif args.subcmd == "install":
         python = args.python
         if not python:
@@ -147,11 +166,11 @@ def main():
             else:
                 python = sys.executable
         if args.symlink:
-            install_symlink(args.addon_dir, python)
+            install_symlink(addon_dir, python)
         else:
-            install(args.addon_dir, python)
+            install(addon_dir, python)
     elif args.subcmd == "build":
-        _build_wheel(args.addon_dir, args.out_dir)
+        _build_wheel(addon_dir, args.out_dir)
     else:
         ap.print_help()
         sys.exit(1)

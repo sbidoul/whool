@@ -1,13 +1,13 @@
-from email.generator import Generator
-from email.message import Message
 import os
-from pathlib import Path
 import shutil
 import subprocess
 import tempfile
+from email.generator import Generator
+from email.message import Message
+from pathlib import Path
 
-from setuptools_odoo import get_addon_metadata
 import toml
+from setuptools_odoo import get_addon_metadata
 from wheel.wheelfile import WheelFile
 
 from . import __version__

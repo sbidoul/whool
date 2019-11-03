@@ -1,12 +1,12 @@
 import argparse
 import logging
 import os
-from pathlib import Path
 import subprocess
 import sys
 import sysconfig
 import tempfile
 import textwrap
+from pathlib import Path
 
 from . import __version__
 from .buildapi import _build_wheel

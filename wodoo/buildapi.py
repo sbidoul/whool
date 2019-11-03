@@ -147,7 +147,6 @@ def build_wheel(wheel_directory, config_settings=None, metadata_directory=None):
 
 
 def build_sdist(sdist_directory, config_settings=None):
-    # TODO put PKG-INFO at root
-    # TODO pyproject.toml too, I suppose
+    # TODO put PKG-INFO and pyproject.toml at root
     # TODO with addon code in odoo/addons or at root?
     raise UnsupportedOperation()

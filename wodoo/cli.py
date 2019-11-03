@@ -97,7 +97,7 @@ def main():
         "init",
         help="Initialize pyproject.toml in addon_dir with the wodoo build-system.",
     )
-    # TODO init --commit
+    # TODO init --git-commit, --git-add
     parser_install = subparsers.add_parser(
         "install",
         help="Install the addon. "
@@ -116,7 +116,7 @@ def main():
     parser_install.add_argument(
         "--python",
         help="Target Python executable. If not set, use the python of the "
-        "active current virtualenv, or else the python ronunning wodoo.",
+        "active current virtualenv, or else the python running wodoo.",
     )
     parser_build = subparsers.add_parser(
         "build",

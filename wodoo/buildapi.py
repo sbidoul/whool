@@ -1,4 +1,3 @@
-import os
 import shutil
 import subprocess
 import tarfile
@@ -14,7 +13,7 @@ from wheel.wheelfile import WheelFile
 
 from . import __version__
 
-TAG = "py3-none-any"
+TAG = "py3-none-any"  # TODO py2 for Odoo <= 11
 
 
 class UnsupportedOperation(NotImplementedError):
@@ -26,8 +25,8 @@ class NoScmFound(Exception):
 
 
 def _load_pyproject_toml(addon_dir):
-    pyproject_toml_path = os.path.join(addon_dir, "pyproject.toml")
-    if os.path.exists(pyproject_toml_path):
+    pyproject_toml_path = addon_dir / "pyproject.toml"
+    if pyproject_toml_path.exists():
         with open(pyproject_toml_path) as f:
             return toml.load(f)
     return {}
@@ -62,13 +61,13 @@ def _copy_to(addon_dir, dst):
         # shutil.copytree(addon_dir, dst)
         raise
     else:
-        os.mkdir(dst)
+        dst.mkdir()
         for f in scm_files:
-            d = os.path.dirname(f)
-            dstd = os.path.join(dst, d)
-            if not os.path.isdir(dstd):
-                os.makedirs(dstd)
-            shutil.copy(os.path.join(addon_dir, f), dstd)
+            d = Path(f).parent
+            dstd = dst / d
+            if not dstd.is_dir():
+                dstd.mkdir(parents=True)
+            shutil.copy(addon_dir / f, dstd)
 
 
 def _ensure_absent(paths):
@@ -174,13 +173,13 @@ def _build_wheel(
             _ensure_absent(
                 [odoo_addon_path / "pyproject.toml", odoo_addon_path / "PKG-INFO"]
             )
-        with WheelFile(os.path.join(wheel_directory, wheel_name), "w") as wf:
+        with WheelFile(wheel_directory / wheel_name, "w") as wf:
             wf.write_files(tmpdir)
     return wheel_name, dist_info_dirname, addon_name
 
 
 def build_wheel(wheel_directory, config_settings=None, metadata_directory=None):
-    wheel_name, _, _ = _build_wheel(Path.cwd(), wheel_directory)
+    wheel_name, _, _ = _build_wheel(Path.cwd(), Path(wheel_directory))
     return wheel_name
 
 
@@ -190,11 +189,12 @@ def _build_sdist(addon_dir, sdist_directory):
     sdist_name = _get_sdist_base_name(metadata)
     sdist_tar_name = sdist_name + ".tar.gz"
     with tempfile.TemporaryDirectory() as tmpdir:
-        sdist_tmpdir = os.path.join(tmpdir, sdist_name)
+        tmpdir = Path(tmpdir)
+        sdist_tmpdir = tmpdir / sdist_name
         _copy_to(addon_dir, sdist_tmpdir)
         _make_pkg_info(metadata, sdist_tmpdir)
         with tarfile.open(
-            os.path.join(sdist_directory, sdist_tar_name),
+            str(sdist_directory / sdist_tar_name),
             mode="w|gz",
             format=tarfile.PAX_FORMAT,
         ) as tf:
@@ -203,5 +203,5 @@ def _build_sdist(addon_dir, sdist_directory):
 
 
 def build_sdist(sdist_directory, config_settings=None):
-    sdist_tar_name, _ = _build_sdist(Path.cwd(), sdist_directory)
+    sdist_tar_name, _ = _build_sdist(Path.cwd(), Path(sdist_directory))
     return sdist_tar_name

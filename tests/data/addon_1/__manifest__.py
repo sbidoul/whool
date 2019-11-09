@@ -1,4 +1,4 @@
 {
-    "name": "addon1",
+    "name": "addon 1",
     "version": "12.0.1.0.0",
 }

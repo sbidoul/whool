@@ -1,9 +1,11 @@
 import os
 import shutil
 import subprocess
+import tarfile
 import tempfile
 from email.generator import Generator
 from email.message import Message
+from email.parser import HeaderParser
 from pathlib import Path
 
 import toml
@@ -45,6 +47,11 @@ def _scm_ls_files(addon_dir):
 
 
 def _copy_to(addon_dir, dst):
+    if _get_pkg_info_metadata(addon_dir):
+        # if PKG-INFO is present, assume we are in an sdist, copy everything
+        shutil.copytree(addon_dir, dst)
+        return
+    # copy scm controlled files
     try:
         scm_files = _scm_ls_files(addon_dir)
     except NoScmFound:
@@ -62,6 +69,12 @@ def _copy_to(addon_dir, dst):
             if not os.path.isdir(dstd):
                 os.makedirs(dstd)
             shutil.copy(os.path.join(addon_dir, f), dstd)
+
+
+def _ensure_absent(paths):
+    for path in paths:
+        if path.exists():
+            path.unlink()
 
 
 def _write_metadata(path, msg):
@@ -90,6 +103,10 @@ def _make_dist_info(metadata, dst):
     return dist_info_dirname
 
 
+def _make_pkg_info(metadata, dst):
+    _write_metadata(Path(dst) / "PKG-INFO", metadata)
+
+
 def _get_addon_name(addon_dir):
     return Path(addon_dir).resolve().name
 
@@ -100,7 +117,23 @@ def _get_wheel_name(metadata):
     )
 
 
+def _get_sdist_base_name(metadata):
+    return "{}-{}".format(metadata["Name"], metadata["Version"])
+
+
+def _get_pkg_info_metadata(addon_dir):
+    pkg_info_path = Path(addon_dir) / "PKG-INFO"
+    if not pkg_info_path.exists():
+        return None
+    with open("PKG-INFO", encoding="utf-8") as fp:
+        return HeaderParser().parse(fp)
+
+
 def _get_metadata(addon_dir, local_version_identifier=None):
+    metadata = _get_pkg_info_metadata(addon_dir)
+    if metadata:
+        # if PKG-INFO is present, assume we are in an sdist
+        return metadata
     options = (
         _load_pyproject_toml(addon_dir)
         .get("tool", {})
@@ -135,7 +168,12 @@ def _build_wheel(
         if not dist_info_only:
             odoo_addon_path = Path(tmpdir) / "odoo" / "addons"
             odoo_addon_path.mkdir(parents=True)
-            _copy_to(addon_dir, odoo_addon_path / addon_name)
+            odoo_addon_path = odoo_addon_path / addon_name
+            _copy_to(addon_dir, odoo_addon_path)
+            # we don't want pyproject.toml nor PKG-INFO in the wheel
+            _ensure_absent(
+                [odoo_addon_path / "pyproject.toml", odoo_addon_path / "PKG-INFO"]
+            )
         with WheelFile(os.path.join(wheel_directory, wheel_name), "w") as wf:
             wf.write_files(tmpdir)
     return wheel_name, dist_info_dirname, addon_name
@@ -146,7 +184,24 @@ def build_wheel(wheel_directory, config_settings=None, metadata_directory=None):
     return wheel_name
 
 
+def _build_sdist(addon_dir, sdist_directory):
+    addon_name = _get_addon_name(addon_dir)
+    metadata = _get_metadata(addon_dir)
+    sdist_name = _get_sdist_base_name(metadata)
+    sdist_tar_name = sdist_name + ".tar.gz"
+    with tempfile.TemporaryDirectory() as tmpdir:
+        sdist_tmpdir = os.path.join(tmpdir, sdist_name)
+        _copy_to(addon_dir, sdist_tmpdir)
+        _make_pkg_info(metadata, sdist_tmpdir)
+        with tarfile.open(
+            os.path.join(sdist_directory, sdist_tar_name),
+            mode="w|gz",
+            format=tarfile.PAX_FORMAT,
+        ) as tf:
+            tf.add(sdist_tmpdir, arcname=sdist_name)
+    return sdist_tar_name, addon_name
+
+
 def build_sdist(sdist_directory, config_settings=None):
-    # TODO put PKG-INFO and pyproject.toml at root
-    # TODO with addon code in odoo/addons or at root?
-    raise UnsupportedOperation()
+    sdist_tar_name, _ = _build_sdist(Path.cwd(), sdist_directory)
+    return sdist_tar_name

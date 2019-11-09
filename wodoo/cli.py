@@ -11,7 +11,7 @@ from pathlib import Path
 import toml
 
 from . import __version__
-from .buildapi import _build_wheel
+from .buildapi import _build_sdist, _build_wheel
 
 
 def _get_purelib_path(python):
@@ -139,6 +139,8 @@ def main():
         "build",
         help="Build the addon. A trivial alternative to 'python -m pep517.build'.",
     )
+    parser_build.add_argument("--binary", "-b", action="store_true")
+    parser_build.add_argument("--source", "-s", action="store_true")
     parser_build.add_argument(
         "--out-dir", "-o", required=True, help="Destination in which to save the build."
     )
@@ -170,7 +172,10 @@ def main():
         else:
             install(addon_dir, python)
     elif args.subcmd == "build":
-        _build_wheel(addon_dir, args.out_dir)
+        if args.binary or not args.source:
+            _build_wheel(addon_dir, args.out_dir)
+        if args.source or not args.binary:
+            _build_sdist(addon_dir, args.out_dir)
     else:
         ap.print_help()
         sys.exit(1)

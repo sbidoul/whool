@@ -10,7 +10,7 @@ from .init import init
 from .install import install, install_symlink
 
 
-def main():
+def main() -> None:
     ap = argparse.ArgumentParser(
         description="The Wodoo CLI is a set of useful commands to work "
         "with pep 517 compliant Odoo addons. It's most useful "

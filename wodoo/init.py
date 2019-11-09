@@ -1,5 +1,6 @@
 import sys
 import textwrap
+from pathlib import Path
 
 import toml
 
@@ -12,7 +13,7 @@ BUILD_SYSTEM_TOML = textwrap.dedent(
 )
 
 
-def init(addon_dir):
+def init(addon_dir: Path) -> None:
     pyproject_toml_path = addon_dir / "pyproject.toml"
     if not pyproject_toml_path.exists():
         with open(pyproject_toml_path, "w") as f:
@@ -22,7 +23,7 @@ def init(addon_dir):
             pyproject_toml = toml.load(f)
         if "build-system" in pyproject_toml:
             if (
-                pyproject_toml.get("build-system").get("build-backend")
+                pyproject_toml.get("build-system", {}).get("build-backend")
                 != "wodoo.build-api"
             ):
                 print(

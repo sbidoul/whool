@@ -7,7 +7,7 @@ from pathlib import Path
 from .buildapi import _build_wheel
 
 
-def _get_purelib_path(python):
+def _get_purelib_path(python: str) -> Path:
     if python == sys.executable:
         return Path(sysconfig.get_paths()["purelib"])
     return Path(
@@ -18,18 +18,20 @@ def _get_purelib_path(python):
     )
 
 
-def install(addon_dir, python):
+def install(addon_dir: Path, python: str) -> None:
     with tempfile.TemporaryDirectory() as tmpdir:
-        wheel_name, _, _ = _build_wheel(addon_dir, tmpdir)
-        subprocess.check_call([python, "-m", "pip", "install", tmpdir / wheel_name])
+        tmppath = Path(tmpdir)
+        wheel_name, _, _ = _build_wheel(addon_dir, tmppath)
+        subprocess.check_call([python, "-m", "pip", "install", tmppath / wheel_name])
 
 
-def install_symlink(addon_dir, python):
+def install_symlink(addon_dir: Path, python: str) -> None:
     with tempfile.TemporaryDirectory() as tmpdir:
+        tmppath = Path(tmpdir)
         wheel_name, dist_info_dirname, addon_name = _build_wheel(
-            addon_dir, tmpdir, dist_info_only=True, local_version_identifier="symlink"
+            addon_dir, tmppath, dist_info_only=True, local_version_identifier="symlink"
         )
-        subprocess.check_call([python, "-m", "pip", "install", tmpdir / wheel_name])
+        subprocess.check_call([python, "-m", "pip", "install", tmppath / wheel_name])
         purelib_path = _get_purelib_path(python)
         odoo_addons_path = purelib_path / "odoo" / "addons"
         if not odoo_addons_path.exists():

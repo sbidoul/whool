@@ -6,10 +6,11 @@ from email.generator import Generator
 from email.message import Message
 from email.parser import HeaderParser
 from pathlib import Path
+from typing import Any, Dict, List, MutableMapping, Optional, Tuple
 
 import toml
-from setuptools_odoo import get_addon_metadata
-from wheel.wheelfile import WheelFile
+from setuptools_odoo import get_addon_metadata  # type: ignore
+from wheel.wheelfile import WheelFile  # type: ignore
 
 from . import __version__
 
@@ -24,7 +25,7 @@ class NoScmFound(Exception):
     pass
 
 
-def _load_pyproject_toml(addon_dir):
+def _load_pyproject_toml(addon_dir: Path) -> MutableMapping[str, Any]:
     pyproject_toml_path = addon_dir / "pyproject.toml"
     if pyproject_toml_path.exists():
         with open(pyproject_toml_path) as f:
@@ -32,7 +33,7 @@ def _load_pyproject_toml(addon_dir):
     return {}
 
 
-def _scm_ls_files(addon_dir):
+def _scm_ls_files(addon_dir: Path) -> List[str]:
     try:
         return (
             subprocess.check_output(
@@ -45,7 +46,7 @@ def _scm_ls_files(addon_dir):
         raise NoScmFound()
 
 
-def _copy_to(addon_dir, dst):
+def _copy_to(addon_dir: Path, dst: Path) -> None:
     if _get_pkg_info_metadata(addon_dir):
         # if PKG-INFO is present, assume we are in an sdist, copy everything
         shutil.copytree(addon_dir, dst)
@@ -70,18 +71,18 @@ def _copy_to(addon_dir, dst):
             shutil.copy(addon_dir / f, dstd)
 
 
-def _ensure_absent(paths):
+def _ensure_absent(paths: List[Path]) -> None:
     for path in paths:
         if path.exists():
             path.unlink()
 
 
-def _write_metadata(path, msg):
+def _write_metadata(path: Path, msg: Message) -> None:
     with open(path, "w", encoding="utf-8") as out:
         Generator(out, mangle_from_=False, maxheaderlen=0).flatten(msg)
 
 
-def _prepare_wheel_metadata():
+def _prepare_wheel_metadata() -> Message:
     msg = Message()
     msg["Wheel-Version"] = "1.0"  # of the spec
     msg["Generator"] = "Wodoo " + __version__
@@ -90,7 +91,7 @@ def _prepare_wheel_metadata():
     return msg
 
 
-def _make_dist_info(metadata, dst):
+def _make_dist_info(metadata: Message, dst: Path) -> str:
     dist_info_dirname = "{}-{}.dist-info".format(
         metadata["Name"].replace("-", "_"), metadata["Version"]
     )
@@ -102,25 +103,25 @@ def _make_dist_info(metadata, dst):
     return dist_info_dirname
 
 
-def _make_pkg_info(metadata, dst):
+def _make_pkg_info(metadata: Message, dst: Path) -> None:
     _write_metadata(Path(dst) / "PKG-INFO", metadata)
 
 
-def _get_addon_name(addon_dir):
+def _get_addon_name(addon_dir: Path) -> str:
     return Path(addon_dir).resolve().name
 
 
-def _get_wheel_name(metadata):
+def _get_wheel_name(metadata: Message) -> str:
     return "{}-{}-{}.whl".format(
         metadata["Name"].replace("-", "_"), metadata["Version"], TAG
     )
 
 
-def _get_sdist_base_name(metadata):
+def _get_sdist_base_name(metadata: Message) -> str:
     return "{}-{}".format(metadata["Name"], metadata["Version"])
 
 
-def _get_pkg_info_metadata(addon_dir):
+def _get_pkg_info_metadata(addon_dir: Path) -> Optional[Message]:
     pkg_info_path = Path(addon_dir) / "PKG-INFO"
     if not pkg_info_path.exists():
         return None
@@ -128,11 +129,13 @@ def _get_pkg_info_metadata(addon_dir):
         return HeaderParser().parse(fp)
 
 
-def _get_metadata(addon_dir, local_version_identifier=None):
-    metadata = _get_pkg_info_metadata(addon_dir)
-    if metadata:
+def _get_metadata(
+    addon_dir: Path, local_version_identifier: Optional[str] = None
+) -> Message:
+    pkg_info_metadata = _get_pkg_info_metadata(addon_dir)
+    if pkg_info_metadata:
         # if PKG-INFO is present, assume we are in an sdist
-        return metadata
+        return pkg_info_metadata
     options = (
         _load_pyproject_toml(addon_dir)
         .get("tool", {})
@@ -151,21 +154,25 @@ def _get_metadata(addon_dir, local_version_identifier=None):
         metadata.replace_header(
             "Version", metadata["Version"] + "+" + local_version_identifier
         )
-    return metadata
+    return metadata  # type: ignore
 
 
 def _build_wheel(
-    addon_dir, wheel_directory, dist_info_only=False, local_version_identifier=None
-):
+    addon_dir: Path,
+    wheel_directory: Path,
+    dist_info_only: bool = False,
+    local_version_identifier: Optional[str] = None,
+) -> Tuple[str, str, str]:
     addon_name = _get_addon_name(addon_dir)
     metadata = _get_metadata(
         addon_dir, local_version_identifier=local_version_identifier
     )
     wheel_name = _get_wheel_name(metadata)
     with tempfile.TemporaryDirectory() as tmpdir:
-        dist_info_dirname = _make_dist_info(metadata, tmpdir)
+        tmppath = Path(tmpdir)
+        dist_info_dirname = _make_dist_info(metadata, tmppath)
         if not dist_info_only:
-            odoo_addon_path = Path(tmpdir) / "odoo" / "addons"
+            odoo_addon_path = tmppath / "odoo" / "addons"
             odoo_addon_path.mkdir(parents=True)
             odoo_addon_path = odoo_addon_path / addon_name
             _copy_to(addon_dir, odoo_addon_path)
@@ -178,19 +185,23 @@ def _build_wheel(
     return wheel_name, dist_info_dirname, addon_name
 
 
-def build_wheel(wheel_directory, config_settings=None, metadata_directory=None):
+def build_wheel(
+    wheel_directory: str,
+    config_settings: Optional[Dict[str, Any]] = None,
+    metadata_directory: Optional[str] = None,
+) -> str:
     wheel_name, _, _ = _build_wheel(Path.cwd(), Path(wheel_directory))
     return wheel_name
 
 
-def _build_sdist(addon_dir, sdist_directory):
+def _build_sdist(addon_dir: Path, sdist_directory: Path) -> Tuple[str, str]:
     addon_name = _get_addon_name(addon_dir)
     metadata = _get_metadata(addon_dir)
     sdist_name = _get_sdist_base_name(metadata)
     sdist_tar_name = sdist_name + ".tar.gz"
     with tempfile.TemporaryDirectory() as tmpdir:
-        tmpdir = Path(tmpdir)
-        sdist_tmpdir = tmpdir / sdist_name
+        tmpppath = Path(tmpdir)
+        sdist_tmpdir = tmpppath / sdist_name
         _copy_to(addon_dir, sdist_tmpdir)
         _make_pkg_info(metadata, sdist_tmpdir)
         with tarfile.open(
@@ -198,10 +209,12 @@ def _build_sdist(addon_dir, sdist_directory):
             mode="w|gz",
             format=tarfile.PAX_FORMAT,
         ) as tf:
-            tf.add(sdist_tmpdir, arcname=sdist_name)
+            tf.add(str(sdist_tmpdir), arcname=sdist_name)
     return sdist_tar_name, addon_name
 
 
-def build_sdist(sdist_directory, config_settings=None):
+def build_sdist(
+    sdist_directory: str, config_settings: Optional[Dict[str, Any]] = None
+) -> str:
     sdist_tar_name, _ = _build_sdist(Path.cwd(), Path(sdist_directory))
     return sdist_tar_name

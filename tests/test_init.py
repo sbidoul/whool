@@ -1,4 +1,4 @@
-from wodoo.cli import init, BUILD_SYSTEM_TOML
+from wodoo.cli import BUILD_SYSTEM_TOML, init
 
 
 def test_init_no_pyproject_toml(tmp_path):

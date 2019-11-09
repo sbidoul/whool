@@ -40,7 +40,7 @@ def _scm_ls_files(addon_dir):
                 ["git", "ls-files"], universal_newlines=True, cwd=addon_dir
             )
             .strip()
-            .split()
+            .split("\n")
         )
     except subprocess.CalledProcessError:
         raise NoScmFound()

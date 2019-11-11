@@ -1,8 +1,32 @@
 name: CI
 on: [push, pull_request]
 jobs:
-  build:
-    name: 🤖
+  lint:
+    name: Lint
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os:
+          - ubuntu-latest
+        python-version:
+          - 3.x
+        env:
+          - TOXENV: "lint"
+    steps:
+      - uses: actions/checkout@master
+      - name: Setup python
+        uses: actions/setup-python@v1
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install tox
+        run: |
+          python --version
+          python -m pip install --upgrade tox
+      - name: Run tox
+        run: python -m tox
+        env: ${{ matrix.env }}
+  test:
+    name: Test
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -13,7 +37,6 @@ jobs:
         python-version:
           - 3.x
         env:
-          - TOXENV: "lint"
           - TOXENV: "py3"
     steps:
       - uses: actions/checkout@master

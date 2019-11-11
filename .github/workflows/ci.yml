@@ -22,7 +22,9 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install tox
-        run: python3 -m pip install --upgrade tox
+        run: >-
+          python --version
+          python -m pip install --upgrade tox
       - name: Run tox
-        run: python3 -m tox
+        run: python -m tox
         env: ${{ matrix.env }}

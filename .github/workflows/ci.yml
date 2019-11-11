@@ -29,7 +29,7 @@ jobs:
           python -c "import os; print(os.environ.get('GITHUB_WORKSPACE'))"
           python -m pip install --upgrade tox
       - name: Run tox
-        run: env PRE_COMMIT_HOME=.pre-commit -m tox
+        run: env PRE_COMMIT_HOME=.pre-commit python -m tox
         shell: bash
         env: ${{ matrix.env }}
   test:

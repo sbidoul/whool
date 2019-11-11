@@ -1,5 +1,5 @@
 name: CI
-on: [push]
+on: [push, pull_request]
 jobs:
   build:
     name: 🤖
@@ -7,7 +7,9 @@ jobs:
     strategy:
       matrix:
         os:
-        - ubuntu-18.04
+        - ubuntu-latest
+        - windows-latest
+        - macos-latest
         env:
         - TOXENV: lint
         - TOXENV: py3

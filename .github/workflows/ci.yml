@@ -11,7 +11,6 @@ jobs:
         env:
         - TOXENV: lint
         - TOXENV: py3
-    runs-on: ubuntu-18.04
     steps:
       - uses: actions/checkout@master
       - name: Install tox

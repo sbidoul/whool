@@ -1,7 +1,5 @@
 name: CI
 on: [push, pull_request]
-env:
-  PRE_COMMIT_HOME: ${{ GITHUB_WORKSPACE }}/.pre-commit
 jobs:
   lint:
     name: Lint
@@ -23,7 +21,7 @@ jobs:
       - name: pre-commit cache
         uses: actions/cache@v1
         with:
-          path: ${{ GITHUB_WORKSPACE }}/.pre-commit
+          path: .pre-commit
           key: ${{ runner.OS }}-pre-commit
       - name: Install tox
         run: |
@@ -31,7 +29,8 @@ jobs:
           python -c "import os; print(os.environ.get('GITHUB_WORKSPACE'))"
           python -m pip install --upgrade tox
       - name: Run tox
-        run: python -m tox
+        run: env PRE_COMMIT_HOME=.pre-commit -m tox
+        shell: bash
         env: ${{ matrix.env }}
   test:
     name: Test

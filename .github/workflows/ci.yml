@@ -26,7 +26,6 @@ jobs:
       - name: Install tox
         run: |
           python --version
-          python -c "import os; print(os.environ.get('GITHUB_WORKSPACE'))"
           python -m pip install --upgrade tox
       - name: Run tox
         run: env PRE_COMMIT_HOME=${GITHUB_WORKSPACE}/.pre-commit python -m tox

@@ -1,5 +1,7 @@
 name: CI
 on: [push, pull_request]
+env:
+  PRE_COMMIT_HOME: ${{ GITHUB_WORKSPACE }}/.pre-commit
 jobs:
   lint:
     name: Lint
@@ -18,6 +20,11 @@ jobs:
         uses: actions/setup-python@v1
         with:
           python-version: ${{ matrix.python-version }}
+      - name: pre-commit cache
+        uses: actions/cache@v1
+        with:
+          path: ${{ GITHUB_WORKSPACE }}/.pre-commit
+          key: ${{ runner.OS }}-pre-commit
       - name: Install tox
         run: |
           python --version

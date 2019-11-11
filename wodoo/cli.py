@@ -61,8 +61,18 @@ def main() -> None:
         "build",
         help="Build the addon. A trivial alternative to 'python -m pep517.build'.",
     )
-    parser_build.add_argument("--binary", "-b", action="store_true")
-    parser_build.add_argument("--source", "-s", action="store_true")
+    parser_build.add_argument(
+        "--binary",
+        "-b",
+        action="store_true",
+        help="Build wheel. Default unless -s is set.",
+    )
+    parser_build.add_argument(
+        "--source",
+        "-s",
+        action="store_true",
+        help="Build sdist. Default unless -b is set.",
+    )
     parser_build.add_argument(
         "--out-dir", "-o", required=True, help="Destination in which to save the build."
     )

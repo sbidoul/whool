@@ -1,0 +1,20 @@
+name: CI
+on: [push, pull_request]
+jobs:
+  lint:
+    name: 🤖
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os:
+        - ubuntu-18.04
+        env:
+        - TOXENV: lint
+        - TOXENV: py3
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@master
+      - name: Install tox
+        run: pip install --upgrade tox
+      - name: Test with tox
+        run: python -m tox

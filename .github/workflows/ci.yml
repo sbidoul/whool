@@ -55,4 +55,3 @@ jobs:
           python -m pip install --upgrade tox
       - name: Run tox
         run: python -m tox
-        env: ${{ matrix.env }}

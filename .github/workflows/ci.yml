@@ -43,8 +43,6 @@ jobs:
         python-version:
           - 3.x
           - pypy3
-        env:
-          - TOXENV: "py3"
     steps:
       - uses: actions/checkout@master
       - name: Setup python

@@ -42,7 +42,7 @@ jobs:
           - macos-latest
         python-version:
           - 3.x
-          - pypy3
+          # - pypy3
     steps:
       - uses: actions/checkout@master
       - name: Setup python

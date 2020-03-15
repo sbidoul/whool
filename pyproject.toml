@@ -1,12 +1,12 @@
 [build-system]
-requires = ["flit_core >=2.0rc2,<3"]
+requires = ["flit_core >=2,<3"]
 build-backend = "flit_core.buildapi"
 
 [tool.flit.metadata]
 module = "wodoo"
 author = "ACSONE SA/NV"
 author-email = "info@acsone.eu"
-classifiers = ["License :: OSI Approved :: MIT License"]
+classifiers = ["License :: OSI Approved :: MIT License", "Framework :: Odoo"]
 requires = ["toml", "setuptools-odoo", "wheel"]
 
 [tool.flit.scripts]

@@ -55,7 +55,7 @@ def _copy_to(addon_dir: Path, dst: Path) -> None:
     try:
         scm_files = _scm_ls_files(addon_dir)
     except NoScmFound:
-        # TODO DO NOT UNCOMMENT, until pip builds in place.
+        # TODO DO NOT UNCOMMENT, until pip install and pip wheel builds in place.
         # TODO In case pip copies, this will crash because of
         # TODO missing .git directory. If it would not crash
         # TODO the addon name would be wrong because cwd is a temp dir.
@@ -129,9 +129,7 @@ def _get_pkg_info_metadata(addon_dir: Path) -> Optional[Message]:
         return HeaderParser().parse(fp)
 
 
-def _get_metadata(
-    addon_dir: Path, local_version_identifier: Optional[str] = None
-) -> Message:
+def _get_metadata(addon_dir: Path) -> Message:
     pkg_info_metadata = _get_pkg_info_metadata(addon_dir)
     if pkg_info_metadata:
         # if PKG-INFO is present, assume we are in an sdist
@@ -150,28 +148,33 @@ def _get_metadata(
         ),
         odoo_version_override=options.get("odoo_version_override"),
     )
-    if local_version_identifier:
-        metadata.replace_header(
-            "Version", metadata["Version"] + "+" + local_version_identifier
-        )
     return metadata  # type: ignore
 
 
 def _build_wheel(
-    addon_dir: Path,
-    wheel_directory: Path,
-    dist_info_only: bool = False,
-    local_version_identifier: Optional[str] = None,
+    addon_dir: Path, wheel_directory: Path, editable: bool
 ) -> Tuple[str, str, str]:
     addon_name = _get_addon_name(addon_dir)
-    metadata = _get_metadata(
-        addon_dir, local_version_identifier=local_version_identifier
-    )
+    metadata = _get_metadata(addon_dir)
     wheel_name = _get_wheel_name(metadata)
     with tempfile.TemporaryDirectory() as tmpdir:
         tmppath = Path(tmpdir)
+        # always include metadata
         dist_info_dirname = _make_dist_info(metadata, tmppath)
-        if not dist_info_only:
+        if editable:
+            # Prepare {addon_dir}.editable/odoo/addon/addon_name symlink to the addon
+            editable_dir = addon_dir / ".editable"
+            editable_dir.mkdir(parents=False, exist_ok=True)
+            editable_addons_dir = editable_dir / "odoo" / "addons"
+            editable_addons_dir.mkdir(parents=True, exist_ok=True)
+            editable_addon_symlink = editable_addons_dir / addon_name
+            if editable_addon_symlink.exists():
+                editable_addon_symlink.unlink()
+            editable_addon_symlink.symlink_to(addon_dir, target_is_directory=True)
+            # Add .pth file pointing to {addon_dir}/.editable into the wheel
+            with (tmppath / (metadata["Name"] + ".pth")).open("w") as f:
+                f.write(editable_dir)
+        else:
             odoo_addon_path = tmppath / "odoo" / "addons"
             odoo_addon_path.mkdir(parents=True)
             odoo_addon_path = odoo_addon_path / addon_name
@@ -190,7 +193,16 @@ def build_wheel(
     config_settings: Optional[Dict[str, Any]] = None,
     metadata_directory: Optional[str] = None,
 ) -> str:
-    wheel_name, _, _ = _build_wheel(Path.cwd(), Path(wheel_directory))
+    wheel_name, _, _ = _build_wheel(Path.cwd(), Path(wheel_directory), editable=False)
+    return wheel_name
+
+
+def build_editable(
+    wheel_directory: str,
+    config_settings: Optional[Dict[str, Any]] = None,
+    metadata_directory: Optional[str] = None,
+) -> str:
+    wheel_name, _, _ = _build_wheel(Path.cwd(), Path(wheel_directory), editable=True)
     return wheel_name
 
 

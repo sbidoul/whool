@@ -6,11 +6,11 @@ from email.generator import Generator
 from email.message import Message
 from email.parser import HeaderParser
 from pathlib import Path
-from typing import Any, Dict, List, MutableMapping, Optional
+from typing import Any, Dict, List, Optional
 
 import tomli
-from setuptools_odoo import get_addon_metadata  # type: ignore
-from wheel.wheelfile import WheelFile  # type: ignore
+from setuptools_odoo import get_addon_metadata
+from wheel.wheelfile import WheelFile
 
 from . import __version__
 
@@ -25,7 +25,7 @@ class NoScmFound(Exception):
     pass
 
 
-def _load_pyproject_toml(addon_dir: Path) -> MutableMapping[str, Any]:
+def _load_pyproject_toml(addon_dir: Path) -> Dict[str, Any]:
     pyproject_toml_path = addon_dir / "pyproject.toml"
     if pyproject_toml_path.exists():
         with open(pyproject_toml_path, "rb") as f:

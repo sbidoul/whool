@@ -14,3 +14,6 @@ wodoo = "wodoo.cli:main"
 
 [tool.isort]
 profile = 'black'
+
+[tool.mypy]
+strict = true

@@ -6,7 +6,7 @@ from email.generator import Generator
 from email.message import Message
 from email.parser import HeaderParser
 from pathlib import Path
-from typing import Any, Dict, List, MutableMapping, Optional, Tuple
+from typing import Any, Dict, List, MutableMapping, Optional
 
 import toml
 from setuptools_odoo import get_addon_metadata  # type: ignore
@@ -151,16 +151,14 @@ def _get_metadata(addon_dir: Path) -> Message:
     return metadata  # type: ignore
 
 
-def _build_wheel(
-    addon_dir: Path, wheel_directory: Path, editable: bool
-) -> Tuple[str, str, str]:
+def _build_wheel(addon_dir: Path, wheel_directory: Path, editable: bool) -> str:
     addon_name = _get_addon_name(addon_dir)
     metadata = _get_metadata(addon_dir)
     wheel_name = _get_wheel_name(metadata)
     with tempfile.TemporaryDirectory() as tmpdir:
         tmppath = Path(tmpdir)
         # always include metadata
-        dist_info_dirname = _make_dist_info(metadata, tmppath)
+        _make_dist_info(metadata, tmppath)
         if editable:
             # Prepare {addon_dir}.editable/odoo/addon/addon_name symlink to the addon
             editable_dir = addon_dir / ".editable"
@@ -185,7 +183,7 @@ def _build_wheel(
             )
         with WheelFile(wheel_directory / wheel_name, "w") as wf:
             wf.write_files(tmpdir)
-    return wheel_name, dist_info_dirname, addon_name
+    return wheel_name
 
 
 def build_wheel(
@@ -193,8 +191,7 @@ def build_wheel(
     config_settings: Optional[Dict[str, Any]] = None,
     metadata_directory: Optional[str] = None,
 ) -> str:
-    wheel_name, _, _ = _build_wheel(Path.cwd(), Path(wheel_directory), editable=False)
-    return wheel_name
+    return _build_wheel(Path.cwd(), Path(wheel_directory), editable=False)
 
 
 def build_editable(
@@ -202,12 +199,10 @@ def build_editable(
     config_settings: Optional[Dict[str, Any]] = None,
     metadata_directory: Optional[str] = None,
 ) -> str:
-    wheel_name, _, _ = _build_wheel(Path.cwd(), Path(wheel_directory), editable=True)
-    return wheel_name
+    return _build_wheel(Path.cwd(), Path(wheel_directory), editable=True)
 
 
-def _build_sdist(addon_dir: Path, sdist_directory: Path) -> Tuple[str, str]:
-    addon_name = _get_addon_name(addon_dir)
+def _build_sdist(addon_dir: Path, sdist_directory: Path) -> str:
     metadata = _get_metadata(addon_dir)
     sdist_name = _get_sdist_base_name(metadata)
     sdist_tar_name = sdist_name + ".tar.gz"
@@ -222,11 +217,10 @@ def _build_sdist(addon_dir: Path, sdist_directory: Path) -> Tuple[str, str]:
             format=tarfile.PAX_FORMAT,
         ) as tf:
             tf.add(str(sdist_tmpdir), arcname=sdist_name)
-    return sdist_tar_name, addon_name
+    return sdist_tar_name
 
 
 def build_sdist(
     sdist_directory: str, config_settings: Optional[Dict[str, Any]] = None
 ) -> str:
-    sdist_tar_name, _ = _build_sdist(Path.cwd(), Path(sdist_directory))
-    return sdist_tar_name
+    return _build_sdist(Path.cwd(), Path(sdist_directory))

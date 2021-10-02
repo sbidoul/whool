@@ -10,7 +10,7 @@ from typing import Any, Dict, List, Optional
 
 import tomli
 from setuptools_odoo import get_addon_metadata
-from wheel.wheelfile import WheelFile
+from wheel.wheelfile import WheelFile  # TODO WheelFile is not a public API of wheel
 
 from .version import version as wodoo_version
 

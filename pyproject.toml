@@ -11,3 +11,6 @@ requires = ["tomli", "setuptools-odoo", "wheel"]
 
 [tool.flit.scripts]
 wodoo = "wodoo.cli:main"
+
+[tool.isort]
+profile = 'black'

@@ -171,7 +171,7 @@ def _build_wheel(addon_dir: Path, wheel_directory: Path, editable: bool) -> str:
             editable_addon_symlink.symlink_to(addon_dir, target_is_directory=True)
             # Add .pth file pointing to {addon_dir}/.editable into the wheel
             with (tmppath / (metadata["Name"] + ".pth")).open("w") as f:
-                f.write(editable_dir)
+                f.write(str(editable_dir.resolve()))
         else:
             odoo_addon_path = tmppath / "odoo" / "addons"
             odoo_addon_path.mkdir(parents=True)

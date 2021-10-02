@@ -1,5 +1,5 @@
 [build-system]
-requires = ["flit_core@git+https://github.com/sbidoul/flit.git@d68674b#subdirectory=flit_core"]  # >=3.4,<4
+requires = ["flit_core@git+https://github.com/takluyver/flit.git@master#subdirectory=flit_core"]  # >=3.4,<4
 build-backend = "flit_core.buildapi"
 
 [project]

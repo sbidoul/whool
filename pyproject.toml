@@ -7,7 +7,7 @@ module = "wodoo"
 author = "ACSONE SA/NV"
 author-email = "info@acsone.eu"
 classifiers = ["License :: OSI Approved :: MIT License", "Framework :: Odoo"]
-requires = ["toml", "setuptools-odoo", "wheel"]
+requires = ["tomli", "setuptools-odoo", "wheel"]
 
 [tool.flit.scripts]
 wodoo = "wodoo.cli:main"

@@ -8,7 +8,7 @@ from email.parser import HeaderParser
 from pathlib import Path
 from typing import Any, Dict, List, MutableMapping, Optional
 
-import toml
+import tomli
 from setuptools_odoo import get_addon_metadata  # type: ignore
 from wheel.wheelfile import WheelFile  # type: ignore
 
@@ -28,8 +28,8 @@ class NoScmFound(Exception):
 def _load_pyproject_toml(addon_dir: Path) -> MutableMapping[str, Any]:
     pyproject_toml_path = addon_dir / "pyproject.toml"
     if pyproject_toml_path.exists():
-        with open(pyproject_toml_path) as f:
-            return toml.load(f)
+        with open(pyproject_toml_path, "rb") as f:
+            return tomli.load(f)
     return {}
 
 

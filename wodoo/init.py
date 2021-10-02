@@ -2,7 +2,7 @@ import sys
 import textwrap
 from pathlib import Path
 
-import toml
+import tomli
 
 BUILD_SYSTEM_TOML = textwrap.dedent(
     """\
@@ -10,17 +10,17 @@ BUILD_SYSTEM_TOML = textwrap.dedent(
         requires = ["wodoo"]
         build-backend = "wodoo.buildapi"
     """
-)
+).encode("ascii")
 
 
 def init(addon_dir: Path) -> None:
     pyproject_toml_path = addon_dir / "pyproject.toml"
     if not pyproject_toml_path.exists():
-        with open(pyproject_toml_path, "w") as f:
+        with open(pyproject_toml_path, "wb") as f:
             f.write(BUILD_SYSTEM_TOML)
     else:
-        with open(pyproject_toml_path, "r") as f:
-            pyproject_toml = toml.load(f)
+        with open(pyproject_toml_path, "rb") as f:
+            pyproject_toml = tomli.load(f)
         if "build-system" in pyproject_toml:
             if (
                 pyproject_toml.get("build-system", {}).get("build-backend")
@@ -32,6 +32,6 @@ def init(addon_dir: Path) -> None:
                     file=sys.stderr,
                 )
         else:
-            with open(pyproject_toml_path, "a") as f:
-                f.write("\n")
+            with open(pyproject_toml_path, "ab") as f:
+                f.write(b"\n")
                 f.write(BUILD_SYSTEM_TOML)

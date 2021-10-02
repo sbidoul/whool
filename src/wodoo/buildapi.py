@@ -12,7 +12,7 @@ import tomli
 from setuptools_odoo import get_addon_metadata
 from wheel.wheelfile import WheelFile
 
-from . import __version__
+from .version import version as wodoo_version
 
 TAG = "py3-none-any"  # TODO py2 for Odoo <= 11
 
@@ -85,7 +85,7 @@ def _write_metadata(path: Path, msg: Message) -> None:
 def _prepare_wheel_metadata() -> Message:
     msg = Message()
     msg["Wheel-Version"] = "1.0"  # of the spec
-    msg["Generator"] = "Wodoo " + __version__
+    msg["Generator"] = "Wodoo " + wodoo_version
     msg["Root-Is-Purelib"] = "true"
     msg["Tag"] = TAG
     return msg

@@ -4,17 +4,18 @@ import os
 import sys
 from pathlib import Path
 
-from . import __version__
 from .init import init
+from .version import version
 
 
 def main() -> None:
-    ap = argparse.ArgumentParser(
-        description="The Wodoo CLI is a set of useful commands to work "
-        "with pep 517 compliant Odoo addons. It's most useful "
-        "use case as of fall 2019 is 'wodoo install --symlink'."
+    ap = argparse.ArgumentParser()
+    ap.add_argument(
+        "-V",
+        "--version",
+        action="version",
+        version="Wodoo " + version,
     )
-    ap.add_argument("-V", "--version", action="version", version="Wodoo " + __version__)
     ap.add_argument(
         "--verbose",
         "-v",

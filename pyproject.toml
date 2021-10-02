@@ -1,15 +1,27 @@
 [build-system]
-requires = ["flit_core >=2,<3"]
+requires = ["flit_core@git+https://github.com/sbidoul/flit.git@d68674b#subdirectory=flit_core"]  # >=3.2,<4
 build-backend = "flit_core.buildapi"
 
-[tool.flit.metadata]
-module = "wodoo"
-author = "ACSONE SA/NV"
-author-email = "info@acsone.eu"
-classifiers = ["License :: OSI Approved :: MIT License", "Framework :: Odoo"]
-requires = ["tomli", "setuptools-odoo", "wheel"]
+[project]
+name = "wodoo"
+description = "wodoo - Next Gen Odoo Addons packager"
+version = "0.9.0"
+authors = [
+    {name = "Stéphane Bidoul", email = "stephane.bidoul@acsone.eu"}
+]
+classifiers = [
+    "License :: OSI Approved :: MIT License",
+    "Framework :: Odoo",
+]
+requires-python = ">=3.6"
+dependencies = [
+    "importlib_metadata;python_version<'3.8'",
+    "setuptools-odoo",
+    "tomli",
+    "wheel",
+]
 
-[tool.flit.scripts]
+[project.scripts]
 wodoo = "wodoo.cli:main"
 
 [tool.isort]

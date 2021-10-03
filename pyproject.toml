@@ -10,7 +10,7 @@ authors = [
     {name = "Stéphane Bidoul", email = "stephane.bidoul@acsone.eu"}
 ]
 classifiers = [
-    "Development Status :: Alpha",
+    "Development Status :: 3 - Alpha",
     "License :: OSI Approved :: MIT License",
     "Framework :: Odoo",
 ]

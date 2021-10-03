@@ -1,0 +1,3 @@
+[build-system]
+requires = ["wodoo"]
+build-backend = "wodoo.buildapi"

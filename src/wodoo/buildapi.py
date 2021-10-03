@@ -1,3 +1,4 @@
+import re
 import shutil
 import subprocess
 import tarfile
@@ -15,13 +16,22 @@ from wheel.wheelfile import WheelFile  # TODO WheelFile is not a public API of w
 from .version import version as wodoo_version
 
 TAG = "py3-none-any"  # TODO py2 for Odoo <= 11
+METADATA_NAME_RE = re.compile(r"^odoo(\d+)-addon-(?P<addon_name>.*)$")
 
 
 class UnsupportedOperation(NotImplementedError):
     pass
 
 
-class NoScmFound(Exception):
+class WodooException(Exception):
+    pass
+
+
+class InvalidMetadata(WodooException):
+    pass
+
+
+class NoScmFound(WodooException):
     pass
 
 
@@ -55,7 +65,7 @@ def _copy_to(addon_dir: Path, dst: Path) -> None:
     try:
         scm_files = _scm_ls_files(addon_dir)
     except NoScmFound:
-        # TODO DO NOT UNCOMMENT, until pip install and pip wheel builds in place.
+        # TODO DO NOT UNCOMMENT, until pip install and pip wheel build in place.
         # TODO In case pip copies, this will crash because of
         # TODO missing .git directory. If it would not crash
         # TODO the addon name would be wrong because cwd is a temp dir.
@@ -95,7 +105,7 @@ def _make_dist_info(metadata: Message, dst: Path) -> str:
     dist_info_dirname = "{}-{}.dist-info".format(
         metadata["Name"].replace("-", "_"), metadata["Version"]
     )
-    dist_info_path = Path(dst) / dist_info_dirname
+    dist_info_path = dst / dist_info_dirname
     dist_info_path.mkdir()
     _write_metadata(dist_info_path / "WHEEL", _prepare_wheel_metadata())
     _write_metadata(dist_info_path / "METADATA", metadata)
@@ -104,11 +114,7 @@ def _make_dist_info(metadata: Message, dst: Path) -> str:
 
 
 def _make_pkg_info(metadata: Message, dst: Path) -> None:
-    _write_metadata(Path(dst) / "PKG-INFO", metadata)
-
-
-def _get_addon_name(addon_dir: Path) -> str:
-    return Path(addon_dir).resolve().name
+    _write_metadata(dst / "PKG-INFO", metadata)
 
 
 def _get_wheel_name(metadata: Message) -> str:
@@ -125,15 +131,11 @@ def _get_pkg_info_metadata(addon_dir: Path) -> Optional[Message]:
     pkg_info_path = Path(addon_dir) / "PKG-INFO"
     if not pkg_info_path.exists():
         return None
-    with open("PKG-INFO", encoding="utf-8") as fp:
+    with open(pkg_info_path, encoding="utf-8") as fp:
         return HeaderParser().parse(fp)
 
 
 def _get_metadata(addon_dir: Path) -> Message:
-    pkg_info_metadata = _get_pkg_info_metadata(addon_dir)
-    if pkg_info_metadata:
-        # if PKG-INFO is present, assume we are in an sdist
-        return pkg_info_metadata
     options = (
         _load_pyproject_toml(addon_dir)
         .get("tool", {})
@@ -141,19 +143,28 @@ def _get_metadata(addon_dir: Path) -> Message:
         .get("options", {})
     )
     metadata = get_addon_metadata(
-        addon_dir,
+        str(addon_dir),
         depends_override=options.get("depends_override", {}),
         external_dependencies_override=options.get(
             "external_dependencies_override", {}
         ),
         odoo_version_override=options.get("odoo_version_override"),
+        post_version_strategy_override=options.get("post_version_strategy_override"),
+        precomputed_metadata_path=str(addon_dir / "PKG-INFO"),
     )
     return metadata  # type: ignore
 
 
+def _addon_name_from_metadata_name(metadata_name: str) -> str:
+    mo = METADATA_NAME_RE.match(metadata_name)
+    if not mo:
+        raise InvalidMetadata(f"{metadata_name} is not a valid Odoo addon package name")
+    return mo.group("addon_name").replace("-", "_")
+
+
 def _build_wheel(addon_dir: Path, wheel_directory: Path, editable: bool) -> str:
-    addon_name = _get_addon_name(addon_dir)
     metadata = _get_metadata(addon_dir)
+    addon_name = _addon_name_from_metadata_name(metadata["Name"])
     wheel_name = _get_wheel_name(metadata)
     with tempfile.TemporaryDirectory() as tmpdir:
         tmppath = Path(tmpdir)

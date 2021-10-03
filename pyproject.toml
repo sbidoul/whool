@@ -17,7 +17,8 @@ classifiers = [
 requires-python = ">=3.6"
 dependencies = [
     "importlib_metadata;python_version<'3.8'",
-    "setuptools-odoo>=2.5",
+    # "setuptools-odoo>=3.0",
+    "setuptools-odoo @ git+https://github.com/acsone/setuptools-odoo",
     "tomli",
     "wheel",
 ]

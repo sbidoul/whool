@@ -90,8 +90,8 @@ def _ensure_absent(paths: List[Path]) -> None:
 
 
 def _write_metadata(path: Path, msg: Message) -> None:
-    with open(path, "w", encoding="utf-8") as out:
-        Generator(out, mangle_from_=False, maxheaderlen=0).flatten(msg)
+    with open(path, "w", encoding="utf-8") as f:
+        Generator(f, mangle_from_=False, maxheaderlen=0).flatten(msg)
 
 
 def _prepare_wheel_metadata() -> Message:
@@ -133,8 +133,8 @@ def _get_pkg_info_metadata(addon_dir: Path) -> Optional[Message]:
     pkg_info_path = Path(addon_dir) / "PKG-INFO"
     if not pkg_info_path.exists():
         return None
-    with open(pkg_info_path, encoding="utf-8") as fp:
-        return HeaderParser().parse(fp)
+    with open(pkg_info_path, encoding="utf-8") as f:
+        return HeaderParser().parse(f)
 
 
 def _get_metadata(addon_dir: Path) -> Message:
@@ -177,8 +177,9 @@ def _build_wheel(addon_dir: Path, wheel_directory: Path, editable: bool) -> str:
                 editable_addon_symlink.unlink()
             editable_addon_symlink.symlink_to(addon_dir, target_is_directory=True)
             # Add .pth file pointing to {addon_dir}/.editable into the wheel
-            with (tmppath / (metadata["Name"] + ".pth")).open("w") as f:
-                f.write(str(editable_dir.resolve()))
+            tmppath.joinpath(metadata["Name"] + ".pth").write_text(
+                str(editable_dir.resolve())
+            )
         else:
             odoo_addon_path = tmppath / "odoo" / "addons"
             odoo_addon_path.mkdir(parents=True)

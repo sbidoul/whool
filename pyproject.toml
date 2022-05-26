@@ -1,13 +1,12 @@
 [build-system]
-requires = ["flit_core@git+https://github.com/takluyver/flit.git@master#subdirectory=flit_core"]  # >=3.4,<4
-build-backend = "flit_core.buildapi"
+requires = ["hatchling", "hatch-vcs"]
+build-backend = "hatchling.build"
 
 [project]
 name = "wodoo"
 description = "wodoo - build backend for Odoo addons"
-version = "0.9.0a"
 authors = [
-    {name = "Stéphane Bidoul", email = "stephane.bidoul@acsone.eu"}
+  {name = "Stéphane Bidoul", email = "stephane.bidoul@acsone.eu"}
 ]
 classifiers = [
     "Development Status :: 3 - Alpha",
@@ -16,16 +15,66 @@ classifiers = [
 ]
 requires-python = ">=3.6"
 dependencies = [
-    "importlib_metadata;python_version<'3.8'",
-    # "setuptools-odoo>=3.0",
-    "setuptools-odoo @ git+https://github.com/acsone/setuptools-odoo",
+    "manifestoo-core[metadata]>=0.8",
     "tomli",
-    "wheel",
+    "wheel==0.37.1",  # pin because we use an undocumented feature
+    "importlib_metadata; python_version<'3.8'",
 ]
 scripts = {wodoo = "wodoo.cli:main"}
+dynamic = ["version"]
+
+[project.optional-dependencies]
+test = [
+    "pytest",
+    "coverage[toml]",
+    "mypy",
+]
+doc = [
+    "sphinx",
+    "furo",
+    "myst-parser",
+    "towncrier",
+    "sphinxcontrib-towncrier",
+]
+
+[project.urls]
+Homepage = "https://github.com/acsone/wodoo"
+Documentation = "https://wodoo.readthedocs.io/en/stable/"
+Changelog = "https://wodoo.readthedocs.io/en/stable/changelog.html"
+Source = "https://github.com/acsone/wodoo"
+
+[tool.hatch.version]
+source = "vcs"
+
+[tool.hatch.build]
+exclude = [
+    "/.github",
+]
+
 
 [tool.isort]
 profile = 'black'
 
 [tool.mypy]
 strict = true
+
+[tool.coverage.run]
+branch = true
+source_pkgs = ["wodoo"]
+
+[tool.coverage.paths]
+source = ["src", ".tox/*/site-packages"]
+
+[tool.coverage.report]
+show_missing = true
+exclude_lines = [
+    "pragma: no cover",
+]
+
+[tool.towncrier]
+package = "manifestoo_core"
+package_dir = "src"
+filename = "HISTORY.rst"
+directory = "news"
+issue_format = "`#{issue} <https://github.com/sbidoul/manifestoo-core/issues/{issue}>`_"
+title_format = "{version} ({project_date})"

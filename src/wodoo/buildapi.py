@@ -10,13 +10,15 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 import tomli
-from setuptools_odoo import get_addon_metadata
-from wheel.wheelfile import WheelFile  # TODO WheelFile is not a public API of wheel
+from manifestoo_core.metadata import metadata_from_addon_dir
+
+# TODO WheelFile is not a public API of wheel
+from wheel.wheelfile import WheelFile  # type: ignore
 
 from .version import version as wodoo_version
 
-TAG = "py3-none-any"  # TODO py2 for Odoo <= 11
-METADATA_NAME_RE = re.compile(r"^odoo(\d+)-addon-(?P<addon_name>.*)$")
+TAG = "py3-none-any"
+METADATA_NAME_RE = re.compile(r"^odoo(\d*)-addon-(?P<addon_name>.*)$")
 
 
 class UnsupportedOperation(NotImplementedError):
@@ -142,17 +144,11 @@ def _get_metadata(addon_dir: Path) -> Message:
         .get("wodoo", {})
         .get("options", {})
     )
-    metadata = get_addon_metadata(
-        str(addon_dir),
-        depends_override=options.get("depends_override", {}),
-        external_dependencies_override=options.get(
-            "external_dependencies_override", {}
-        ),
-        odoo_version_override=options.get("odoo_version_override"),
-        post_version_strategy_override=options.get("post_version_strategy_override"),
-        precomputed_metadata_path=str(addon_dir / "PKG-INFO"),
+    return metadata_from_addon_dir(
+        addon_dir,
+        options,
+        precomputed_metadata_file=addon_dir.joinpath("PKG-INFO"),
     )
-    return metadata  # type: ignore
 
 
 def _addon_name_from_metadata_name(metadata_name: str) -> str:
@@ -171,7 +167,7 @@ def _build_wheel(addon_dir: Path, wheel_directory: Path, editable: bool) -> str:
         # always include metadata
         _make_dist_info(metadata, tmppath)
         if editable:
-            # Prepare {addon_dir}.editable/odoo/addon/addon_name symlink to the addon
+            # Prepare {addon_dir}/.editable/odoo/addon/addon_name symlink to the addon
             editable_dir = addon_dir / ".editable"
             editable_dir.mkdir(parents=False, exist_ok=True)
             editable_addons_dir = editable_dir / "odoo" / "addons"

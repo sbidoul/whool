@@ -5,6 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "wodoo"
 description = "wodoo - build backend for Odoo addons"
+readme = "README.md"
 authors = [
   {name = "Stéphane Bidoul", email = "stephane.bidoul@acsone.eu"}
 ]

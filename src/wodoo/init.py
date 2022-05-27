@@ -1,30 +1,21 @@
-import sys
-import textwrap
+import logging
 from pathlib import Path
+from typing import Sequence
 
 import tomli
-from manifestoo_core.addon import Addon
-from manifestoo_core.exceptions import AddonNotFound
 
-BUILD_SYSTEM_TOML = textwrap.dedent(
-    """\
-        [build-system]
-        requires = ["wodoo"]
-        build-backend = "wodoo.buildapi"
-    """
-).encode("ascii")
+_logger = logging.getLogger(__name__)
+
+BUILD_SYSTEM_TOML = b"""\
+[build-system]
+requires = ["wodoo"]
+build-backend = "wodoo.buildapi"
+"""
 
 
-def init(addon_dir: Path) -> bool:
-    try:
-        Addon.from_addon_dir(addon_dir)
-    except AddonNotFound as e:
-        print(
-            f"Did not initialize Wodoo build-system in {addon_dir} "
-            f"because it does not seem to be an Odoo addon directory: {e}.",
-            file=sys.stderr,
-        )
-        return False
+def init_addon_dir(addon_dir: Path) -> bool:
+    if not addon_dir.joinpath("__manifest__.py").is_file():
+        return
     pyproject_toml_path = addon_dir / "pyproject.toml"
     if not pyproject_toml_path.exists():
         with open(pyproject_toml_path, "wb") as f:
@@ -37,10 +28,9 @@ def init(addon_dir: Path) -> bool:
                 pyproject_toml.get("build-system", {}).get("build-backend")
                 != "wodoo.buildapi"
             ):
-                print(
+                _logger.debug(
                     f"Did not initialize Wodoo build-system in {pyproject_toml_path} "
                     f"because another one is already defined.",
-                    file=sys.stderr,
                 )
                 return False
         else:
@@ -48,3 +38,14 @@ def init(addon_dir: Path) -> bool:
                 f.write(b"\n")
                 f.write(BUILD_SYSTEM_TOML)
     return True
+
+
+def init(dir: Path) -> Sequence[Path]:
+    res = []
+    if init_addon_dir(dir):
+        res.append(dir)
+    for subdir in dir.iterdir():
+        if subdir.is_dir():
+            if init_addon_dir(subdir):
+                res.append(subdir)
+    return res

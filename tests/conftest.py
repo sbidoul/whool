@@ -3,7 +3,7 @@ from pathlib import Path
 
 import pytest
 
-from wodoo.init import init
+from wodoo.init import init_addon_dir
 
 
 @pytest.fixture
@@ -27,7 +27,7 @@ def addon1(tmp_path: Path) -> Path:
 
 @pytest.fixture
 def addon1_with_pyproject(addon1: Path) -> Path:
-    init(addon1)
+    init_addon_dir(addon1)
     subprocess.check_call(["git", "add", "pyproject.toml"], cwd=addon1)
     addon1.joinpath("__manifest__.py").write_text(
         "{'name': 'addon1', 'version': '15.0.1.1.0'}"

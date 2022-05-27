@@ -1,3 +1,5 @@
 - test editable
 - test scm
 - test tool.wodoo.options
+- init metapackage ?
+- wodoo deps ? or should we extract metadata with, e.g. build ? but to build OCA requirements.txt we need to exclude Odoo deps

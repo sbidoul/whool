@@ -44,8 +44,9 @@ def init(dir: Path) -> Sequence[Path]:
     res = []
     if init_addon_dir(dir):
         res.append(dir)
-    for subdir in dir.iterdir():
-        if subdir.is_dir():
-            if init_addon_dir(subdir):
-                res.append(subdir)
+    else:
+        for subdir in dir.iterdir():
+            if subdir.is_dir():
+                if init_addon_dir(subdir):
+                    res.append(subdir)
     return res

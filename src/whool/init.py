@@ -8,8 +8,8 @@ _logger = logging.getLogger(__name__)
 
 BUILD_SYSTEM_TOML = b"""\
 [build-system]
-requires = ["wodoo"]
-build-backend = "wodoo.buildapi"
+requires = ["whool"]
+build-backend = "whool.buildapi"
 """
 
 
@@ -26,10 +26,10 @@ def init_addon_dir(addon_dir: Path) -> bool:
         if "build-system" in pyproject_toml:
             if (
                 pyproject_toml.get("build-system", {}).get("build-backend")
-                != "wodoo.buildapi"
+                != "whool.buildapi"
             ):
                 _logger.debug(
-                    f"Did not initialize Wodoo build-system in {pyproject_toml_path} "
+                    f"Did not initialize Whool build-system in {pyproject_toml_path} "
                     f"because another one is already defined.",
                 )
                 return False

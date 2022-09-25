@@ -3,8 +3,8 @@ requires = ["hatchling", "hatch-vcs"]
 build-backend = "hatchling.build"
 
 [project]
-name = "wodoo"
-description = "wodoo - build backend for Odoo addons"
+name = "whool"
+description = "whool - build backend for Odoo addons"
 readme = "README.md"
 authors = [
   {name = "Stéphane Bidoul", email = "stephane.bidoul@acsone.eu"}
@@ -21,7 +21,7 @@ dependencies = [
     "wheel==0.37.1",  # pin because we use an undocumented feature
     "importlib_metadata; python_version<'3.8'",
 ]
-scripts = {wodoo = "wodoo.cli:main"}
+scripts = {whool = "whool.cli:main"}
 dynamic = ["version"]
 
 [project.optional-dependencies]
@@ -39,10 +39,10 @@ doc = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/acsone/wodoo"
-Documentation = "https://wodoo.readthedocs.io/en/stable/"
-Changelog = "https://wodoo.readthedocs.io/en/stable/changelog.html"
-Source = "https://github.com/acsone/wodoo"
+Homepage = "https://github.com/acsone/whool"
+Documentation = "https://whool.readthedocs.io/en/stable/"
+Changelog = "https://whool.readthedocs.io/en/stable/changelog.html"
+Source = "https://github.com/acsone/whool"
 
 [tool.hatch.version]
 source = "vcs"
@@ -61,7 +61,7 @@ strict = true
 
 [tool.coverage.run]
 branch = true
-source_pkgs = ["wodoo"]
+source_pkgs = ["whool"]
 
 [tool.coverage.paths]
 source = ["src", ".tox/*/site-packages"]

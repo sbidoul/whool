@@ -3,7 +3,7 @@ from pathlib import Path
 
 import pytest
 
-from wodoo.init import init_addon_dir
+from whool.init import init_addon_dir
 
 
 @pytest.fixture

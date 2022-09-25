@@ -20,7 +20,7 @@ else:
 # TODO WheelFile is not a public API of wheel
 from wheel.wheelfile import WheelFile  # type: ignore
 
-from .version import version as wodoo_version
+from .version import version as whool_version
 
 TAG = "py3-none-any"
 METADATA_NAME_RE = re.compile(r"^odoo(\d*)-addon-(?P<addon_name>.*)$")
@@ -30,15 +30,15 @@ class UnsupportedOperation(NotImplementedError):
     pass
 
 
-class WodooException(Exception):
+class WhoolException(Exception):
     pass
 
 
-class InvalidMetadata(WodooException):
+class InvalidMetadata(WhoolException):
     pass
 
 
-class NoScmFound(WodooException):
+class NoScmFound(WhoolException):
     pass
 
 
@@ -102,7 +102,7 @@ def _write_metadata(path: Path, msg: Message) -> None:
 def _prepare_wheel_metadata() -> Message:
     msg = Message()
     msg["Wheel-Version"] = "1.0"  # of the spec
-    msg["Generator"] = "Wodoo " + wodoo_version
+    msg["Generator"] = "Whool " + whool_version
     msg["Root-Is-Purelib"] = "true"
     msg["Tag"] = TAG
     return msg
@@ -143,12 +143,7 @@ def _get_pkg_info_metadata(addon_dir: Path) -> Optional[Message]:
 
 
 def _get_metadata(addon_dir: Path) -> Message:
-    options = (
-        _load_pyproject_toml(addon_dir)
-        .get("tool", {})
-        .get("wodoo", {})
-        .get("options", {})
-    )
+    options = _load_pyproject_toml(addon_dir).get("tool", {}).get("whool", {})
     return metadata_from_addon_dir(
         addon_dir,
         options,
@@ -172,16 +167,15 @@ def _build_wheel(addon_dir: Path, wheel_directory: Path, editable: bool) -> str:
         # always include metadata
         _make_dist_info(metadata, tmppath)
         if editable:
-            # Prepare {addon_dir}/.editable/odoo/addon/addon_name symlink to the addon
-            editable_dir = addon_dir / ".editable"
-            editable_dir.mkdir(parents=False, exist_ok=True)
+            # Prepare {addon_dir}/build/__editable__/odoo/addon/{addon_name} symlink
+            editable_dir = addon_dir / "build" / "__editable__"
+            if editable_dir.is_dir():
+                shutil.rmtree(editable_dir)
             editable_addons_dir = editable_dir / "odoo" / "addons"
             editable_addons_dir.mkdir(parents=True, exist_ok=True)
             editable_addon_symlink = editable_addons_dir / addon_name
-            if editable_addon_symlink.exists():
-                editable_addon_symlink.unlink()
             editable_addon_symlink.symlink_to(addon_dir, target_is_directory=True)
-            # Add .pth file pointing to {addon_dir}/.editable into the wheel
+            # Add .pth file pointing to {addon_dir}/build/__editable__ into the wheel
             tmppath.joinpath(metadata["Name"] + ".pth").write_text(
                 str(editable_dir.resolve())
             )

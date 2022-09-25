@@ -1,7 +1,7 @@
 from pathlib import Path
 from zipfile import ZipFile
 
-from wodoo.buildapi import _build_wheel
+from whool.buildapi import _build_wheel
 
 
 def test_build_wheel(addon1_with_pyproject: Path, tmp_path: Path) -> None:

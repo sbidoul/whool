@@ -1,7 +1,7 @@
 from pathlib import Path
 from tarfile import TarFile
 
-from wodoo.buildapi import _build_sdist
+from whool.buildapi import _build_sdist
 
 
 def test_build_sdist(addon1: Path, tmp_path: Path) -> None:

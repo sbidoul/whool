@@ -14,7 +14,7 @@ def main() -> None:
         "-V",
         "--version",
         action="version",
-        version="Wodoo " + version,
+        version="Whool " + version,
     )
     ap.add_argument(
         "--verbose",
@@ -27,7 +27,7 @@ def main() -> None:
 
     subparsers.add_parser(
         "init",
-        help="Initialize pyproject.toml in addon_dir with the wodoo build-system.",
+        help="Initialize pyproject.toml in addon_dir with the whool build-system.",
     )
     # TODO init --git-commit, --git-add
     subparsers.add_parser(

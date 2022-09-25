@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from wodoo.init import BUILD_SYSTEM_TOML, init_addon_dir
+from whool.init import BUILD_SYSTEM_TOML, init_addon_dir
 
 
 def test_init_no_pyproject_toml(addon1: Path) -> None:

@@ -1,4 +1,4 @@
-# Wodoo - Package Odoo Addons as Python Wheels
+# whool - Package Odoo Addons as Python Wheels
 
 !!! pre-alpha work in progress...
 

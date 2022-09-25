@@ -15,7 +15,7 @@ build-backend = "whool.buildapi"
 
 def init_addon_dir(addon_dir: Path) -> bool:
     if not addon_dir.joinpath("__manifest__.py").is_file():
-        return
+        return False
     pyproject_toml_path = addon_dir / "pyproject.toml"
     if not pyproject_toml_path.exists():
         with open(pyproject_toml_path, "wb") as f:

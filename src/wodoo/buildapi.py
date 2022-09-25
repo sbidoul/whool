@@ -1,6 +1,7 @@
 import re
 import shutil
 import subprocess
+import sys
 import tarfile
 import tempfile
 from email.generator import Generator
@@ -9,8 +10,12 @@ from email.parser import HeaderParser
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-import tomli
 from manifestoo_core.metadata import metadata_from_addon_dir
+
+if sys.version_info < (3, 11):
+    import tomli as tomllib
+else:
+    import tomllib
 
 # TODO WheelFile is not a public API of wheel
 from wheel.wheelfile import WheelFile  # type: ignore
@@ -41,7 +46,7 @@ def _load_pyproject_toml(addon_dir: Path) -> Dict[str, Any]:
     pyproject_toml_path = addon_dir / "pyproject.toml"
     if pyproject_toml_path.exists():
         with open(pyproject_toml_path, "rb") as f:
-            return tomli.load(f)
+            return tomllib.load(f)
     return {}
 
 

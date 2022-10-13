@@ -18,7 +18,29 @@ def test_build_sdist_from_sdist(addon1_with_pyproject: Path, tmp_path: Path) -> 
     tmp_path2.mkdir()
     with TarFile.open(tmp_path / sdist_name, mode="r:gz") as tf1:
         tf1_names = sorted(tf1.getnames())
-        tf1.extractall(tmp_path2)
+        
+        import os
+        
+        def is_within_directory(directory, target):
+            
+            abs_directory = os.path.abspath(directory)
+            abs_target = os.path.abspath(target)
+        
+            prefix = os.path.commonprefix([abs_directory, abs_target])
+            
+            return prefix == abs_directory
+        
+        def safe_extract(tar, path=".", members=None, *, numeric_owner=False):
+        
+            for member in tar.getmembers():
+                member_path = os.path.join(path, member.name)
+                if not is_within_directory(path, member_path):
+                    raise Exception("Attempted Path Traversal in Tar File")
+        
+            tar.extractall(path, members, numeric_owner=numeric_owner) 
+            
+        
+        safe_extract(tf1, tmp_path2)
     assert "odoo-addon-addon1-15.0.1.1.0/PKG-INFO" in tf1_names
     assert "odoo-addon-addon1-15.0.1.1.0/pyproject.toml" in tf1_names
     # build sdist from sdist
@@ -29,7 +51,26 @@ def test_build_sdist_from_sdist(addon1_with_pyproject: Path, tmp_path: Path) -> 
     # extract 2nd sdist and test that the root directory has the correct name
     with TarFile.open(tmp_path3 / sdist_name, mode="r:gz") as tf2:
         tf2_names = sorted(tf2.getnames())
-        tf2.extractall(tmp_path3)
+        def is_within_directory(directory, target):
+            
+            abs_directory = os.path.abspath(directory)
+            abs_target = os.path.abspath(target)
+        
+            prefix = os.path.commonprefix([abs_directory, abs_target])
+            
+            return prefix == abs_directory
+        
+        def safe_extract(tar, path=".", members=None, *, numeric_owner=False):
+        
+            for member in tar.getmembers():
+                member_path = os.path.join(path, member.name)
+                if not is_within_directory(path, member_path):
+                    raise Exception("Attempted Path Traversal in Tar File")
+        
+            tar.extractall(path, members, numeric_owner=numeric_owner) 
+            
+        
+        safe_extract(tf2, tmp_path3)
     # content of both sdists must be identical
     assert tf1_names == tf2_names
     # PKG-INFO in both sdists must be identical

@@ -10,15 +10,15 @@ authors = [
   {name = "Stéphane Bidoul", email = "stephane.bidoul@acsone.eu"}
 ]
 classifiers = [
-    "Development Status :: 3 - Alpha",
+    "Development Status :: 4 - Beta",
     "License :: OSI Approved :: MIT License",
     "Framework :: Odoo",
 ]
 requires-python = ">=3.7"
 dependencies = [
     "manifestoo-core[metadata]>=0.8",
-    "tomli; python_version<'3.11'",
     "wheel<0.41",  # pin because we use an undocumented feature
+    "tomli; python_version<'3.11'",
     "importlib_metadata; python_version<'3.8'",
 ]
 scripts = {whool = "whool.cli:main"}

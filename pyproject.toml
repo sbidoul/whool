@@ -44,6 +44,7 @@ Documentation = "https://whool.readthedocs.io/en/stable/"
 Changelog = "https://whool.readthedocs.io/en/stable/changelog.html"
 Source = "https://github.com/acsone/whool"
 
+
 [tool.hatch.version]
 source = "vcs"
 
@@ -53,11 +54,10 @@ exclude = [
 ]
 
 
-[tool.isort]
-profile = 'black'
-
 [tool.mypy]
 strict = true
+show_error_codes = true
+
 
 [tool.coverage.run]
 branch = true
@@ -72,6 +72,7 @@ exclude_lines = [
     "pragma: no cover",
 ]
 
+
 [tool.towncrier]
 package = "manifestoo_core"
 package_dir = "src"
@@ -79,3 +80,21 @@ filename = "HISTORY.rst"
 directory = "news"
 issue_format = "`#{issue} <https://github.com/sbidoul/manifestoo-core/issues/{issue}>`_"
 title_format = "{version} ({project_date})"
+
+
+[tool.ruff]
+fix = true
+select = [
+    "E", "F", "W", "C90", "B", "I", "UP", "RUF"
+]
+target-version = "py37"
+
+[tool.ruff.per-file-ignores]
+"__main__.py" = ["B008"]
+
+[tool.ruff.mccabe]
+max-complexity = 13
+
+[tool.ruff.isort]
+known-first-party = ["whool"]
+combine-as-imports = true

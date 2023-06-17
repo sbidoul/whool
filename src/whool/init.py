@@ -2,7 +2,7 @@ import logging
 from pathlib import Path
 from typing import Sequence
 
-import tomli
+from .compat import tomllib
 
 _logger = logging.getLogger(__name__)
 
@@ -22,7 +22,7 @@ def init_addon_dir(addon_dir: Path) -> bool:
             f.write(BUILD_SYSTEM_TOML)
     else:
         with open(pyproject_toml_path, "rb") as f:
-            pyproject_toml = tomli.load(f)
+            pyproject_toml = tomllib.load(f)
         if "build-system" in pyproject_toml:
             if (
                 pyproject_toml.get("build-system", {}).get("build-backend")

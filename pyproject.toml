@@ -14,7 +14,7 @@ classifiers = [
     "License :: OSI Approved :: MIT License",
     "Framework :: Odoo",
 ]
-requires-python = ">=3.6"
+requires-python = ">=3.7"
 dependencies = [
     "manifestoo-core[metadata]>=0.8",
     "tomli; python_version<'3.11'",

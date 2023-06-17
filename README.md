@@ -1,17 +1,21 @@
 # whool - Package Odoo Addons as Python Wheels
 
-!!! pre-alpha work in progress...
+This project is the successor of
+[setuptools-odoo](https://pypi.org/project/setuptools-odoo/), as a standard-compliant
+Python build backend.
 
-This project is the successor of setuptools-odoo, as a PEP 517 build backend.
+It also provides a CLI to initialize `pyproject.toml` in an addon directory,
+and list Python dependencies of an addon.
 
-It also provides a convenience CLI to build and install addons, although
-this can also be achieved with regular Python packaging ecosystem tools
-such as `pip` and `build`.
+The main expected benefit is that the the setup directory is replaced by a
+`pyproject.toml` file at the root of each addon. So it's less intrusive, and does not
+need symbolic links for regular operation.
 
-Main expected benefit: the setup directory is replaced by
-a `pyproject.toml` file at the root of each addon. So it's less intrusive,
-and does not need symbolic links so it works better on platforms where
-symlinks are problematic.
+## Configuration
+
+The following options can be set in `pyproject.toml`:
+
+... TODO
 
 ## Development
 

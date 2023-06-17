@@ -13,5 +13,6 @@ a `pyproject.toml` file at the root of each addon. So it's less intrusive,
 and does not need symbolic links so it works better on platforms where
 symlinks are problematic.
 
-It currently depends on `setuptools-odoo` where the logic to extract
-Python Package Metadata from Odoo Addon Manifests resides.
+## Development
+
+To release and publish to PyPI, go to GitHub and create a release.

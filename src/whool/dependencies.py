@@ -19,4 +19,4 @@ def dependencies_for_addon_dir(addon_dir: Path) -> List[str]:
         _logger.debug("Could not load metadata for %s: %s", addon_dir, e)
         return []
     else:
-        return metadata.get_all("Requires-Dist")
+        return metadata.get_all("Requires-Dist") or []

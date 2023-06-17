@@ -1,7 +1,6 @@
 import re
 import shutil
 import subprocess
-import sys
 import tarfile
 import tempfile
 from email.generator import Generator
@@ -12,14 +11,10 @@ from typing import Any, Dict, List, Optional
 
 from manifestoo_core.metadata import metadata_from_addon_dir
 
-if sys.version_info < (3, 11):
-    import tomli as tomllib
-else:
-    import tomllib
-
 # TODO WheelFile is not a public API of wheel
 from wheel.wheelfile import WheelFile  # type: ignore
 
+from .compat import tomllib
 from .version import version as whool_version
 
 TAG = "py3-none-any"

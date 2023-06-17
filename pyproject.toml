@@ -18,7 +18,7 @@ requires-python = ">=3.6"
 dependencies = [
     "manifestoo-core[metadata]>=0.8",
     "tomli; python_version<'3.11'",
-    "wheel==0.37.1",  # pin because we use an undocumented feature
+    "wheel<0.41",  # pin because we use an undocumented feature
     "importlib_metadata; python_version<'3.8'",
 ]
 scripts = {whool = "whool.cli:main"}

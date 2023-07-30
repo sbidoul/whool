@@ -17,7 +17,7 @@ classifiers = [
 requires-python = ">=3.7"
 dependencies = [
     "manifestoo-core[metadata]>=0.8",
-    "wheel<0.41",  # pin because we use an undocumented feature
+    "wheel<0.42",  # pin because we use an undocumented feature
     "tomli; python_version<'3.11'",
     "importlib_metadata; python_version<'3.8'",
 ]

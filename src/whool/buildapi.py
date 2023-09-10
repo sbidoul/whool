@@ -224,3 +224,13 @@ def build_sdist(
     sdist_directory: str, config_settings: Optional[Dict[str, Any]] = None
 ) -> str:
     return _build_sdist(Path.cwd(), Path(sdist_directory))
+
+
+def prepare_metadata_for_build_wheel(
+    metadata_directory: str, config_settings: Optional[Dict[str, Any]] = None
+):
+    metadata = _get_metadata(Path.cwd())
+    return _make_dist_info(metadata, Path(metadata_directory))
+
+
+prepare_metadata_for_build_editable = prepare_metadata_for_build_wheel

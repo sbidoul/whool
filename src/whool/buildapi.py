@@ -14,7 +14,7 @@ from manifestoo_core.metadata import metadata_from_addon_dir
 # TODO WheelFile is not a public API of wheel
 from wheel.wheelfile import WheelFile  # type: ignore
 
-from .compat import tomllib
+from .utils import load_pyproject_toml
 from .version import version as whool_version
 
 TAG = "py3-none-any"
@@ -35,14 +35,6 @@ class InvalidMetadata(WhoolException):
 
 class NoScmFound(WhoolException):
     pass
-
-
-def _load_pyproject_toml(addon_dir: Path) -> Dict[str, Any]:
-    pyproject_toml_path = addon_dir / "pyproject.toml"
-    if pyproject_toml_path.exists():
-        with open(pyproject_toml_path, "rb") as f:
-            return tomllib.load(f)
-    return {}
 
 
 def _scm_ls_files(addon_dir: Path) -> List[str]:
@@ -138,7 +130,7 @@ def _get_pkg_info_metadata(addon_dir: Path) -> Optional[Message]:
 
 
 def _get_metadata(addon_dir: Path) -> Message:
-    options = _load_pyproject_toml(addon_dir).get("tool", {}).get("whool", {})
+    options = load_pyproject_toml(addon_dir).get("tool", {}).get("whool", {})
     return metadata_from_addon_dir(
         addon_dir,
         options,

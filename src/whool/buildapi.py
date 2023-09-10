@@ -227,7 +227,7 @@ def build_sdist(
 
 def prepare_metadata_for_build_wheel(
     metadata_directory: str, config_settings: Optional[Dict[str, Any]] = None
-):
+) -> str:
     metadata = _get_metadata(Path.cwd())
     return _make_dist_info(metadata, Path(metadata_directory))
 

@@ -1,3 +1,4 @@
+import os
 import re
 import shutil
 import subprocess
@@ -131,6 +132,11 @@ def _get_pkg_info_metadata(addon_dir: Path) -> Optional[Message]:
 
 def _get_metadata(addon_dir: Path) -> Message:
     options = load_pyproject_toml(addon_dir).get("tool", {}).get("whool", {})
+    whool_post_version_strategy_override = os.getenv(
+        "WHOOL_POST_VERSION_STRATEGY_OVERRIDE"
+    )
+    if whool_post_version_strategy_override:
+        options["post_version_strategy_override"] = whool_post_version_strategy_override
     return metadata_from_addon_dir(
         addon_dir,
         options,

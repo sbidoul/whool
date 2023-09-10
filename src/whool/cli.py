@@ -3,7 +3,6 @@ import logging
 import sys
 from pathlib import Path
 
-from .dependencies import dependencies_for_addon_dir
 from .init import init
 from .version import version
 
@@ -30,10 +29,6 @@ def main() -> None:
         help="Initialize pyproject.toml in addon_dir with the whool build-system.",
     )
     # TODO init --git-commit, --git-add
-    subparsers.add_parser(
-        "dependencies",
-        help="Print dependencies.",
-    )
 
     args = ap.parse_args(sys.argv[1:])
     if args.verbose >= 2:
@@ -46,9 +41,6 @@ def main() -> None:
 
     if args.subcmd == "init":
         init(Path.cwd())
-    if args.subcmd == "dependencies":
-        for dep in dependencies_for_addon_dir(Path.cwd()):
-            print(dep)
     else:
         ap.print_help()
         sys.exit(1)

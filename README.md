@@ -4,8 +4,7 @@ This project is the successor of
 [setuptools-odoo](https://pypi.org/project/setuptools-odoo/), as a standard-compliant
 Python build backend.
 
-It also provides a CLI to initialize `pyproject.toml` in an addon directory,
-and list Python dependencies of an addon.
+It also provides a CLI to initialize `pyproject.toml` in an addon directory.
 
 The main expected benefit is that the the setup directory is replaced by a
 `pyproject.toml` file at the root of each addon. So it's less intrusive, and does not

@@ -2,6 +2,7 @@ import os
 import re
 import shutil
 import subprocess
+import sys
 import tarfile
 import tempfile
 from email.generator import Generator
@@ -11,9 +12,6 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 from manifestoo_core.metadata import metadata_from_addon_dir
-
-# TODO WheelFile is not a public API of wheel
-from wheel.wheelfile import WheelFile  # type: ignore
 
 from .utils import load_pyproject_toml
 from .version import version as whool_version
@@ -154,7 +152,6 @@ def _addon_name_from_metadata_name(metadata_name: str) -> str:
 def _build_wheel(addon_dir: Path, wheel_directory: Path, editable: bool) -> str:
     metadata = _get_metadata(addon_dir)
     addon_name = _addon_name_from_metadata_name(metadata["Name"])
-    wheel_name = _get_wheel_name(metadata)
     with tempfile.TemporaryDirectory() as tmpdir:
         tmppath = Path(tmpdir)
         # always include metadata
@@ -181,9 +178,11 @@ def _build_wheel(addon_dir: Path, wheel_directory: Path, editable: bool) -> str:
             _ensure_absent(
                 [odoo_addon_path / "pyproject.toml", odoo_addon_path / "PKG-INFO"]
             )
-        with WheelFile(wheel_directory / wheel_name, "w") as wf:
-            wf.write_files(tmpdir)
-    return wheel_name
+        subprocess.run(
+            [sys.executable, "-m", "wheel", "pack", "-d", wheel_directory, tmpdir],
+            check=True,
+        )
+    return _get_wheel_name(metadata)
 
 
 def build_wheel(

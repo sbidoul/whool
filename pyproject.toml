@@ -7,7 +7,7 @@ name = "whool"
 description = "whool - build backend for Odoo addons"
 readme = "README.md"
 authors = [
-  {name = "Stéphane Bidoul", email = "stephane.bidoul@acsone.eu"}
+  {name = "Stéphane Bidoul", email = "stephane.bidoul@gmail.com"}
 ]
 classifiers = [
     "Development Status :: 4 - Beta",
@@ -39,10 +39,10 @@ doc = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/acsone/whool"
-Documentation = "https://whool.readthedocs.io/en/stable/"
-Changelog = "https://whool.readthedocs.io/en/stable/changelog.html"
-Source = "https://github.com/acsone/whool"
+Homepage = "https://github.com/sbidoul/whool"
+Documentation = "https://github.com/sbidoul/whool"
+Changelog = "https://github.com/sbidoul/whool/blob/main/CHANGELOG.md"
+Source = "https://github.com/sbidoul/whool"
 
 
 [tool.hatch.version]
@@ -53,11 +53,13 @@ exclude = [
     "/.github",
 ]
 
+# mypy
 
 [tool.mypy]
 strict = true
 show_error_codes = true
 
+# coverage
 
 [tool.coverage.run]
 branch = true
@@ -72,15 +74,17 @@ exclude_lines = [
     "pragma: no cover",
 ]
 
+# towncrier
 
 [tool.towncrier]
-package = "manifestoo_core"
-package_dir = "src"
-filename = "HISTORY.rst"
+name = "whool"
 directory = "news"
-issue_format = "`#{issue} <https://github.com/sbidoul/manifestoo-core/issues/{issue}>`_"
-title_format = "{version} ({project_date})"
+filename = "CHANGELOG.md"
+title_format = "## [{version}](https://github.com/sbidoul/whool/tree/v{version}) - {project_date}"
+issue_format = "[#{issue}](https://github.com/sbidoul/whool/issues/{issue})"
+underlines = ["", "", ""]
 
+# ruff
 
 [tool.ruff]
 fix = true

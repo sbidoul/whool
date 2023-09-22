@@ -94,4 +94,10 @@ is now covered by the [hatch-odoo](https://pypi.org/project/hatch-odoo/) project
 
 ## Development
 
-To release and publish to PyPI, go to GitHub and create a release.
+To release and publish to PyPI:
+
+- Update the changelog by running `towncrier build --version X.Y.Z`.
+- Commit and push the changes.
+- Go to GitHub and create a release with a tag `vX.Y.Z`.
+
+The release will be uploaded to PyPI automatically.

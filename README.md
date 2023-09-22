@@ -25,21 +25,31 @@ When that is done you can work with the addon as any regular python project. Not
   available in the Odoo addons path without the need to modify Odoo's `--addons-path`
   option.
 
-## Interaction with git
+## Files included in the distribution packages
 
 `whool` will package all the files that are under `git` control and ignore everything
 else.
 
-The version of the generated distribution packages is also influenced by the `git`
-commit history in the following way. TODO...
+> [!NOTE]
+> TODO elaborate (see setuptools-odoo docs in the meantime)
+
+## Version number of the generated packages
+
+The version of the generated distribution packages is influenced by the `git`
+commit history in the following way.
+
+> [!NOTE]
+> TODO elaborate (see setuptools-odoo docs in the meantime)
 
 ## Configuration
 
 The following options can be set in `pyproject.toml`:
 
+> [!NOTE]
+> TODO explain this (see setuptools-odoo docs in the meantime)
+
 ```toml
 [tool.whool]
-# TODO explain this (see setuptools-odoo docs in the meantime)
 depends_override = {}
 external_dependencies_override = {}
 post_version_strategy_override = "..."

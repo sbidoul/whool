@@ -158,7 +158,10 @@ def _build_wheel(addon_dir: Path, wheel_directory: Path, editable: bool) -> str:
         _make_dist_info(metadata, tmppath)
         if editable:
             # Prepare {addon_dir}/build/__editable__/odoo/addon/{addon_name} symlink
-            editable_dir = addon_dir / "build" / "__editable__"
+            build_dir = addon_dir / "build"
+            build_dir.mkdir(parents=True, exist_ok=True)
+            build_dir.joinpath(".gitignore").write_text("*")
+            editable_dir = build_dir / "__editable__"
             if editable_dir.is_dir():
                 shutil.rmtree(editable_dir)
             editable_addons_dir = editable_dir / "odoo" / "addons"

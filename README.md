@@ -56,15 +56,16 @@ This project is the successor of
 [setuptools-odoo](https://pypi.org/project/setuptools-odoo/), as a standard-compliant
 Python build backend.
 
-The main expected benefit of `whool` over `setuptools-odoo` is that the the setup
-directory is replaced by a `pyproject.toml` file at the root of each addon. It is less
-intrusive, and does not need symbolic links for regular operation.
+The main expected benefit of `whool` over `setuptools-odoo` is that the `setup`
+directory and `setup.py` files are replaced by a `pyproject.toml` file at the root of
+each addon. It is less intrusive, and does not need symbolic links for regular
+operation.
 
-`setuptools-odoo` also relied on little documented hooks and deprecated extension
-mechanisms of `setuptools`.
+`setuptools-odoo` relied on little documented hooks and deprecated extension
+mechanisms of `setuptools`, which was progressively causing compatibility issues.
 
-`setuptools-odoo` also provided a mechanism to package a multi-addon project. This is
-now covered by the [hatch-odoo](https://pypi.org/project/hatch-odoo/) project.
+`setuptools-odoo` provided a mechanism to package a multi-addon project. This
+is now covered by the [hatch-odoo](https://pypi.org/project/hatch-odoo/) project.
 
 ## Development
 

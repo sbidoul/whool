@@ -1,6 +1,6 @@
 # whool
 
-A standard-compliant Python build backend to package Odoo addons.
+A standards-compliant Python build backend to package Odoo addons.
 
 ## Quick start
 
@@ -56,9 +56,24 @@ post_version_strategy_override = "..."
 odoo_version_override = "..."
 ```
 
-If set the following environment variables override the corresponding `pyproject.toml` options:
+If set, the following environment variables override the corresponding `pyproject.toml`
+options:
 
 - `WHOOL_POST_VERSION_STRATEGY_OVERRIDE`
+
+
+## Standard compliance
+
+`whool` is compliant with [PEP 517](https://peps.python.org/pep-0517/) and [PEP
+660](https://peps.python.org/pep-0660/), so it is compatible with all Python build
+frontends, and supports editable installs.
+
+> [!NOTE]
+> Editable install require support for symbolic links, which are available on most
+> platforms but may not be enabled by default on Windows.
+
+It supports the optional `prepare_metadata_for_build_wheel` and
+`prepare_metadata_for_build_editable` hooks, for faster metadata preparation.
 
 ## Comparison to setuptools-odoo
 

@@ -31,7 +31,7 @@ When that is done you can work with the addon as any regular python project. Not
 else.
 
 > [!NOTE]
-> TODO elaborate (see setuptools-odoo docs in the meantime)
+> TODO explain what is included in a sdist vs wheel, and how building from a sdist works.
 
 ## Version number of the generated packages
 

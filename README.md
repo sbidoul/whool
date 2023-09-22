@@ -1,4 +1,4 @@
-# whool - Package Odoo Addons as Python Wheels
+# whool
 
 A standard-compliant Python build backend to package Odoo addons.
 
@@ -27,7 +27,7 @@ When that is done you can work with the addon as any regular python project. Not
 
 ## Interaction with git
 
-`whool` will packages all the files that are under `git` control and ignore everything
+`whool` will package all the files that are under `git` control and ignore everything
 else.
 
 The version of the generated distribution packages is also influenced by the `git`

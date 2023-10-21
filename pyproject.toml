@@ -80,7 +80,7 @@ exclude_lines = [
 name = "whool"
 directory = "news"
 filename = "CHANGELOG.md"
-title_format = "## [{version}](https://github.com/sbidoul/whool/tree/v{version}) - {project_date}"
+title_format = "## [{version}](https://github.com/sbidoul/whool/tree/{version}) - {project_date}"
 issue_format = "[#{issue}](https://github.com/sbidoul/whool/issues/{issue})"
 underlines = ["", "", ""]
 

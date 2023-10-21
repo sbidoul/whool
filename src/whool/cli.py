@@ -24,11 +24,19 @@ def main() -> None:
     )
     subparsers = ap.add_subparsers(title="subcommands", dest="subcmd")
 
-    subparsers.add_parser(
+    init_ap = subparsers.add_parser(
         "init",
-        help="Initialize pyproject.toml in addon_dir with the whool build-system.",
+        help=(
+            "Initialize pyproject.toml files with the whool build-system. "
+            "This is done in the current directory if it is an addon, "
+            "else in immediate subdirectories that are addons."
+        ),
     )
-    # TODO init --git-commit, --git-add
+    init_ap.add_argument(
+        "--exit-non-zero-on-changes",
+        action="store_true",
+        help="Exit with non-zero status if any changes were made.",
+    )
 
     args = ap.parse_args(sys.argv[1:])
     if args.verbose >= 2:
@@ -40,7 +48,9 @@ def main() -> None:
     logging.basicConfig(level=log_level)
 
     if args.subcmd == "init":
-        init(Path.cwd())
+        modified_files = init(Path.cwd())
+        if args.exit_non_zero_on_changes and modified_files:
+            sys.exit(1)
     else:
         ap.print_help()
         sys.exit(1)

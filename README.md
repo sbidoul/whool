@@ -13,7 +13,7 @@ requires = ["whool"]
 build-backend = "whool.buildapi"
 ```
 
-Tip: you can use the `pipx run whool init` command to do that.
+> 💡 you can use the `pipx run whool init` command to do that.
 
 When that is done you can work with the addon as any regular python project. Notably
 
@@ -30,23 +30,20 @@ When that is done you can work with the addon as any regular python project. Not
 `whool` will package all the files that are under `git` control and ignore everything
 else.
 
-> [!NOTE]
-> TODO explain what is included in a sdist vs wheel, and how building from a sdist works.
+> 📝 TODO: explain what is included in a sdist vs wheel, and how building from a sdist works.
 
 ## Version number of the generated packages
 
 The version of the generated distribution packages is influenced by the `git`
 commit history in the following way.
 
-> [!NOTE]
-> TODO elaborate (see setuptools-odoo docs in the meantime)
+> 📝 TODO: elaborate (see setuptools-odoo docs in the meantime)
 
 ## Configuration
 
 The following options can be set in `pyproject.toml`:
 
-> [!NOTE]
-> TODO explain this (see setuptools-odoo docs in the meantime)
+> 📝 TODO: explain this (see setuptools-odoo docs in the meantime)
 
 ```toml
 [tool.whool]

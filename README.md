@@ -53,7 +53,7 @@ The following options can be set in `pyproject.toml`:
 depends_override = {}
 external_dependencies_override = {}
 post_version_strategy_override = "..."
-odoo_version_override = "..."
+odoo_series_override = "..."
 ```
 
 If set, the following environment variables override the corresponding `pyproject.toml`

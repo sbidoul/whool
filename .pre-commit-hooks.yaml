@@ -1,6 +1,6 @@
 - id: whool-init
   name: init pyproject.toml with whool
-  entry: whool init exit-non-zero-on-changes
+  entry: whool init --exit-non-zero-on-changes
   language: python
   always_run: true
   pass_filenames: false

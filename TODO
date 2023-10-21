@@ -2,5 +2,3 @@
 - test scm
 - test tool.whool options
 - init metapackage ?
-- whool deps command ? or should we extract metadata with, e.g. build ? but to build OCA
-  requirements.txt we need to exclude Odoo deps

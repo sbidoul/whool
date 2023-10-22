@@ -57,4 +57,4 @@ def main(argv: Optional[List[str]] = None) -> int:
         return 0
 
     ap.print_help()
-    return 1
+    return 2

@@ -1,5 +1,8 @@
+import os
+from contextlib import contextmanager
 from pathlib import Path
 
+from whool.cli import main
 from whool.init import BUILD_SYSTEM_TOML, init, init_addon_dir
 
 
@@ -53,3 +56,30 @@ def test_init_in_addons_dir_mixed(addon1: Path) -> None:
 
 def test_init_in_addons_dir_with_pyproject(addon1_with_pyproject: Path) -> None:
     assert init(addon1_with_pyproject.parent) == []
+
+
+@contextmanager
+def dir_changer(path: Path) -> None:
+    """A context manager that changes the current working directory"""
+    old_cwd = Path.cwd()
+    os.chdir(path)
+    try:
+        yield
+    finally:
+        os.chdir(old_cwd)
+
+
+def test_init_cli(addon1: Path) -> None:
+    pyproject_toml_path = addon1 / "pyproject.toml"
+    assert not pyproject_toml_path.exists()
+    with dir_changer(addon1):
+        assert main(["init"]) == 0
+    assert pyproject_toml_path.exists()
+
+
+def test_init_cli_nonzero_exit(addon1: Path) -> None:
+    pyproject_toml_path = addon1 / "pyproject.toml"
+    assert not pyproject_toml_path.exists()
+    with dir_changer(addon1):
+        assert main(["init", "--exit-non-zero-on-changes"]) == 1
+    assert pyproject_toml_path.exists()

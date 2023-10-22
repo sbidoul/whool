@@ -11,7 +11,10 @@ from email.parser import HeaderParser
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-from manifestoo_core.metadata import metadata_from_addon_dir
+from manifestoo_core.metadata import (
+    distribution_name_to_addon_name,
+    metadata_from_addon_dir,
+)
 
 from .utils import load_pyproject_toml
 from .version import version as whool_version
@@ -25,10 +28,6 @@ class UnsupportedOperation(NotImplementedError):
 
 
 class WhoolException(Exception):
-    pass
-
-
-class InvalidMetadata(WhoolException):
     pass
 
 
@@ -142,16 +141,9 @@ def _get_metadata(addon_dir: Path) -> Message:
     )
 
 
-def _addon_name_from_metadata_name(metadata_name: str) -> str:
-    mo = METADATA_NAME_RE.match(metadata_name)
-    if not mo:
-        raise InvalidMetadata(f"{metadata_name} is not a valid Odoo addon package name")
-    return mo.group("addon_name").replace("-", "_")
-
-
 def _build_wheel(addon_dir: Path, wheel_directory: Path, editable: bool) -> str:
     metadata = _get_metadata(addon_dir)
-    addon_name = _addon_name_from_metadata_name(metadata["Name"])
+    addon_name = distribution_name_to_addon_name(metadata["Name"])
     with tempfile.TemporaryDirectory() as tmpdir:
         tmppath = Path(tmpdir)
         # always include metadata

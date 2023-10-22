@@ -1,13 +1,17 @@
+import os
 from pathlib import Path
 from tarfile import TarFile
 
-from whool.buildapi import _build_sdist
+from whool.buildapi import _build_sdist, build_sdist
+
+from .utils import dir_changer
 
 
 def test_build_sdist(addon1: Path, tmp_path: Path) -> None:
-    sdist_name = _build_sdist(addon1, tmp_path)
-    assert sdist_name == "odoo-addon-addon1-15.0.1.0.0.tar.gz"
-    assert (tmp_path / sdist_name).exists()
+    with dir_changer(addon1):
+        sdist_name = build_sdist(os.fspath(tmp_path))
+        assert sdist_name == "odoo-addon-addon1-15.0.1.0.0.tar.gz"
+        assert (tmp_path / sdist_name).exists()
 
 
 def test_build_sdist_from_sdist(addon1_with_pyproject: Path, tmp_path: Path) -> None:

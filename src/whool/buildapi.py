@@ -174,7 +174,15 @@ def _build_wheel(addon_dir: Path, wheel_directory: Path, editable: bool) -> str:
                 [odoo_addon_path / "pyproject.toml", odoo_addon_path / "PKG-INFO"]
             )
         subprocess.run(
-            [sys.executable, "-m", "wheel", "pack", "-d", wheel_directory, tmpdir],
+            [
+                sys.executable,
+                "-m",
+                "wheel",
+                "pack",
+                "-d",
+                os.fspath(wheel_directory),  # conv required on Windows Python 3.7 only
+                tmpdir,
+            ],
             check=True,
         )
     return _get_wheel_name(metadata)

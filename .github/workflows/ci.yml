@@ -8,12 +8,13 @@ on:
 
 jobs:
   tests:
-    name: "Python ${{ matrix.python-version }}"
+    name: "Python ${{ matrix.python-version }} on ${{ matrix.machine }}"
     runs-on: "${{ matrix.machine }}"
     strategy:
       fail-fast: false
       matrix:
         include:
+          # linux
           - python-version: "3.7"
             machine: ubuntu-22.04
           - python-version: "3.8"
@@ -26,6 +27,16 @@ jobs:
             machine: ubuntu-22.04
           - python-version: "3.12"
             machine: ubuntu-22.04
+          # mindows
+          - python-version: "3.7"
+            machine: windows-latest
+          - python-version: "3.12"
+            machine: windows-latest
+          # mac
+          - python-version: "3.7"
+            machine: macos-latest
+          - python-version: "3.12"
+            machine: macos-latest
     steps:
       - uses: "actions/checkout@v3"
       - uses: "actions/setup-python@v4"
@@ -33,11 +44,9 @@ jobs:
           python-version: "${{ matrix.python-version }}"
       - name: "Install dependencies"
         run: |
-          set -xe
           python -VV
           python -m site
-          python -m pip install --upgrade pip setuptools wheel
-          python -m pip install --upgrade virtualenv tox tox-gh-actions
+          python -m pip install --upgrade pip virtualenv tox tox-gh-actions
       - name: "Run tox targets for ${{ matrix.python-version }}"
         run: |
           python -m tox

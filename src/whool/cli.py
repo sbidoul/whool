@@ -2,12 +2,15 @@ import argparse
 import logging
 import sys
 from pathlib import Path
+from typing import List, Optional
 
 from .init import init
 from .version import version
 
 
-def main() -> None:
+def main(argv: Optional[List[str]] = None) -> int:
+    if argv is None:
+        argv = sys.argv[1:]
     ap = argparse.ArgumentParser()
     ap.add_argument(
         "-V",
@@ -38,7 +41,7 @@ def main() -> None:
         help="Exit with non-zero status if any changes were made.",
     )
 
-    args = ap.parse_args(sys.argv[1:])
+    args = ap.parse_args(argv)
     if args.verbose >= 2:
         log_level = logging.DEBUG
     elif args.verbose >= 1:
@@ -50,7 +53,8 @@ def main() -> None:
     if args.subcmd == "init":
         modified_files = init(Path.cwd())
         if args.exit_non_zero_on_changes and modified_files:
-            sys.exit(1)
-    else:
-        ap.print_help()
-        sys.exit(1)
+            return 1
+        return 0
+
+    ap.print_help()
+    return 1

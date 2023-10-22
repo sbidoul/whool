@@ -1,9 +1,9 @@
-import os
-from contextlib import contextmanager
 from pathlib import Path
 
 from whool.cli import main
 from whool.init import BUILD_SYSTEM_TOML, init, init_addon_dir
+
+from .utils import dir_changer
 
 
 def test_init_addon_dir_no_pyproject_toml(addon1: Path) -> None:
@@ -56,17 +56,6 @@ def test_init_in_addons_dir_mixed(addon1: Path) -> None:
 
 def test_init_in_addons_dir_with_pyproject(addon1_with_pyproject: Path) -> None:
     assert init(addon1_with_pyproject.parent) == []
-
-
-@contextmanager
-def dir_changer(path: Path) -> None:
-    """A context manager that changes the current working directory"""
-    old_cwd = Path.cwd()
-    os.chdir(path)
-    try:
-        yield
-    finally:
-        os.chdir(old_cwd)
 
 
 def test_init_cli(addon1: Path) -> None:

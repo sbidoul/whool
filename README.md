@@ -1,6 +1,6 @@
 # whool
 
-A standards-compliant Python build backend to package Odoo addons.
+A standards-compliant Python build backend to package individual Odoo addons.
 
 ## Quick start
 

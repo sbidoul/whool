@@ -1,3 +1,11 @@
+## [v0.5](https://github.com/sbidoul/whool/tree/v0.5) - 2023-10-28
+
+
+### Features
+
+- Print modified content when `whool init` exits non-zero. ([#15](https://github.com/sbidoul/whool/issues/15))
+
+
 ## [v0.4](https://github.com/sbidoul/whool/tree/v0.4) - 2023-10-21
 
 `whool` is now considered stable. A 1.0 will be released when the documentation is

@@ -1,5 +1,7 @@
 from pathlib import Path
 
+import pytest
+
 from whool.cli import main
 from whool.init import BUILD_SYSTEM_TOML, init, init_addon_dir
 
@@ -66,9 +68,13 @@ def test_init_cli(addon1: Path) -> None:
     assert pyproject_toml_path.exists()
 
 
-def test_init_cli_nonzero_exit(addon1: Path) -> None:
+def test_init_cli_nonzero_exit(
+    addon1: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
     pyproject_toml_path = addon1 / "pyproject.toml"
     assert not pyproject_toml_path.exists()
     with dir_changer(addon1):
         assert main(["init", "--exit-non-zero-on-changes"]) == 1
     assert pyproject_toml_path.exists()
+    captured = capsys.readouterr()
+    assert captured.err == "pyproject.toml was generated or modified in .\n"

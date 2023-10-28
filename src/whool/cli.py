@@ -53,6 +53,12 @@ def main(argv: Optional[List[str]] = None) -> int:
     if args.subcmd == "init":
         modified_files = init(Path.cwd())
         if args.exit_non_zero_on_changes and modified_files:
+            modified_str = ", ".join(
+                str(p.relative_to(Path.cwd())) for p in modified_files
+            )
+            sys.stderr.write(
+                f"pyproject.toml was generated or modified in {modified_str}\n"
+            )
             return 1
         return 0
 

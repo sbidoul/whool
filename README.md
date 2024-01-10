@@ -89,6 +89,14 @@ mechanisms of `setuptools`, which was progressively causing compatibility issues
 `setuptools-odoo` provided a mechanism to package a multi-addon project. This
 is now covered by the [hatch-odoo](https://pypi.org/project/hatch-odoo/) project.
 
+The equivalent of the `setuptools-odoo-make-default` command is now `whool init`, which
+can initialize a `pyproject.toml` in the current directory if it is an addon, or in all
+immediate subrectories that are addons.
+
+An equivalent of `setuptools-odoo-get-requirements` can now easily be built using
+standard-based tools such as [pyproject-dependencies](https://pypi.org/project/pyproject-dependencies).
+An example can be found in [OCA/maintainer-tools](https://github.com/OCA/maintainer-tools/blob/master/tools/gen_external_dependencies.py).
+
 ## Development
 
 To release and publish to PyPI:

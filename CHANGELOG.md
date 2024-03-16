@@ -1,3 +1,11 @@
+## [v1.0](https://github.com/sbidoul/whool/tree/v1.0) - 2024-03-16
+
+
+### Features
+
+- Allow building from outside a git directory. This requires pip>=21.3. ([#18](https://github.com/sbidoul/whool/issues/18))
+
+
 ## [v0.5](https://github.com/sbidoul/whool/tree/v0.5) - 2023-10-28
 
 

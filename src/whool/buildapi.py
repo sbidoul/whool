@@ -57,12 +57,10 @@ def _copy_to(addon_dir: Path, dst: Path) -> None:
     try:
         scm_files = _scm_ls_files(addon_dir)
     except NoScmFound:
-        # TODO DO NOT UNCOMMENT, until pip install and pip wheel build in place.
-        # TODO In case pip copies, this will crash because of
-        # TODO missing .git directory. If it would not crash
-        # TODO the addon name would be wrong because cwd is a temp dir.
-        # shutil.copytree(addon_dir, dst)
-        raise
+        # NOTE This requires pip>=21.3 which builds in-tree. Previous pip versions
+        # copied to a temporary directory with a different name than the addon, which
+        # caused the resulting distribution name to be wrong.
+        shutil.copytree(addon_dir, dst)
     else:
         dst.mkdir()
         for f in scm_files:

@@ -1,3 +1,9 @@
+## [v1.0.1](https://github.com/sbidoul/whool/tree/v1.0.1) - 2024-03-18
+
+## Bug fixes
+
+- Previous build was missing the `whool` script.
+
 ## [v1.0](https://github.com/sbidoul/whool/tree/v1.0) - 2024-03-16
 
 

@@ -2,6 +2,10 @@
 
 A standards-compliant Python build backend to package individual Odoo addons.
 
+> [!NOTE]
+> If you are looking at packaging a customer project or a collection of addons, you
+> may want to consider the [hatch-odoo](https://pypi.org/project/hatch-odoo) project.
+
 ## Quick start
 
 Create a file named `pyproject.toml` next to the addon's `__manifest__.py` with the

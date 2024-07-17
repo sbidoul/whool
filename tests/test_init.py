@@ -78,3 +78,10 @@ def test_init_cli_nonzero_exit(
     assert pyproject_toml_path.exists()
     captured = capsys.readouterr()
     assert captured.err == "pyproject.toml was generated or modified in .\n"
+
+
+def test_init_cli_no_cwd(addon1: Path) -> None:
+    pyproject_toml_path = addon1 / "pyproject.toml"
+    assert not pyproject_toml_path.exists()
+    assert main(["init", "--exit-non-zero-on-changes", str(addon1)]) == 1
+    assert pyproject_toml_path.exists()

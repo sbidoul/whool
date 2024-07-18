@@ -34,7 +34,7 @@ jobs:
             machine: windows-latest
           # mac
           - python-version: "3.7"
-            machine: macos-latest
+            machine: macos-13
           - python-version: "3.12"
             machine: macos-latest
     steps:

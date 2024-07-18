@@ -40,6 +40,13 @@ def main(argv: Optional[List[str]] = None) -> int:
         action="store_true",
         help="Exit with non-zero status if any changes were made.",
     )
+    init_ap.add_argument(
+        "dir",
+        type=Path,
+        nargs="?",
+        default=Path.cwd(),
+        help="Addon(s) directory to initialize (default: current directory).",
+    )
 
     args = ap.parse_args(argv)
     if args.verbose >= 2:
@@ -51,10 +58,10 @@ def main(argv: Optional[List[str]] = None) -> int:
     logging.basicConfig(level=log_level)
 
     if args.subcmd == "init":
-        modified_files = init(Path.cwd())
+        modified_files = init(args.dir)
         if args.exit_non_zero_on_changes and modified_files:
             modified_str = ", ".join(
-                str(p.relative_to(Path.cwd())) for p in modified_files
+                str(p.relative_to(args.dir)) for p in modified_files
             )
             sys.stderr.write(
                 f"pyproject.toml was generated or modified in {modified_str}\n"

@@ -1,9 +1,18 @@
+## [v1.2](https://github.com/sbidoul/whool/tree/v1.1.1) - 2024-07-25
+
+
+### Bugfixes
+
+- When then `git` command is not available, copy all files to distribution
+  package ([#23](https://github.com/sbidoul/whool/issues/23))
+
+
 ## [v1.1](https://github.com/sbidoul/whool/tree/v1.1) - 2024-07-18
 
 
 ### Features
 
-- whool init now accepts a directory argument ([#21](https://github.com/sbidoul/whool/issues/21))
+- `whool init` now accepts a directory argument ([#21](https://github.com/sbidoul/whool/issues/21))
 
 
 ## [v1.0.1](https://github.com/sbidoul/whool/tree/v1.0.1) - 2024-03-18

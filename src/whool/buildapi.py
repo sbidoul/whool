@@ -44,7 +44,7 @@ def _scm_ls_files(addon_dir: Path) -> List[str]:
             .strip()
             .split("\n")
         )
-    except subprocess.CalledProcessError as e:
+    except (subprocess.CalledProcessError, FileNotFoundError) as e:
         raise NoScmFound() from e
 
 

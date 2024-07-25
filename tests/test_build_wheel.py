@@ -2,6 +2,9 @@ import os
 from pathlib import Path
 from zipfile import ZipFile
 
+import pytest
+from manifestoo_core.git_postversion import POST_VERSION_STRATEGY_NONE
+
 from whool.buildapi import build_wheel
 from whool.init import init_addon_dir
 
@@ -37,3 +40,15 @@ def test_build_wheel_without_scm(tmp_path: Path) -> None:
             names = zf.namelist()
             assert "odoo/addons/addon1/__manifest__.py" in names
             assert "odoo/addons/addon1/pyproject.toml" not in names
+
+
+def test_build_wheel_git_missing(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # Make sure we can't find git executable
+    monkeypatch.setenv("PATH", "/foo")
+    # Override strategy so Git is not needed
+    monkeypatch.setenv(
+        "WHOOL_POST_VERSION_STRATEGY_OVERRIDE", POST_VERSION_STRATEGY_NONE
+    )
+    test_build_wheel_without_scm(tmp_path)

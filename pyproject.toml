@@ -31,13 +31,6 @@ test = [
     "coverage[toml]",
     "mypy",
 ]
-doc = [
-    "sphinx",
-    "furo",
-    "myst-parser",
-    "towncrier",
-    "sphinxcontrib-towncrier",
-]
 
 [project.urls]
 Homepage = "https://github.com/sbidoul/whool"

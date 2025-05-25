@@ -27,15 +27,17 @@ jobs:
             machine: ubuntu-22.04
           - python-version: "3.12"
             machine: ubuntu-22.04
-          # mindows
+          - python-version: "3.13"
+            machine: ubuntu-latest
+          # windows
           - python-version: "3.7"
             machine: windows-latest
-          - python-version: "3.12"
+          - python-version: "3.13"
             machine: windows-latest
           # mac
           - python-version: "3.7"
             machine: macos-13
-          - python-version: "3.12"
+          - python-version: "3.13"
             machine: macos-latest
     steps:
       - uses: "actions/checkout@v3"

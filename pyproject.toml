@@ -27,6 +27,7 @@ dynamic = ["version"]
 [project.optional-dependencies]
 test = [
     "pytest",
+    "pytest-cov",
     "coverage[toml]",
     "mypy",
 ]

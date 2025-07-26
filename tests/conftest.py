@@ -8,7 +8,7 @@ from whool.init import init_addon_dir
 
 @pytest.fixture
 def addon1(tmp_path: Path) -> Path:
-    addon_name = "addon1"
+    addon_name = "Addon1"
     addon_dir = tmp_path / addon_name
     addon_dir.mkdir()
     subprocess.check_call(["git", "init"], cwd=addon_dir)

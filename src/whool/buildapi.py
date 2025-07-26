@@ -91,9 +91,13 @@ def _prepare_wheel_metadata() -> Message:
     return msg
 
 
+def _normalize_dist_name(name: str) -> str:
+    return re.sub(r"[-_.]+", "_", name).lower()
+
+
 def _make_dist_info(metadata: Message, dst: Path) -> str:
     dist_info_dirname = "{}-{}.dist-info".format(
-        metadata["Name"].replace("-", "_"), metadata["Version"]
+        _normalize_dist_name(metadata["Name"]), metadata["Version"]
     )
     dist_info_path = dst / dist_info_dirname
     dist_info_path.mkdir()
@@ -109,12 +113,12 @@ def _make_pkg_info(metadata: Message, dst: Path) -> None:
 
 def _get_wheel_name(metadata: Message) -> str:
     return "{}-{}-{}.whl".format(
-        metadata["Name"].replace("-", "_"), metadata["Version"], TAG
+        _normalize_dist_name(metadata["Name"]), metadata["Version"], TAG
     )
 
 
 def _get_sdist_base_name(metadata: Message) -> str:
-    return "{}-{}".format(metadata["Name"], metadata["Version"])
+    return "{}-{}".format(_normalize_dist_name(metadata["Name"]), metadata["Version"])
 
 
 def _get_pkg_info_metadata(addon_dir: Path) -> Optional[Message]:
@@ -159,9 +163,9 @@ def _build_wheel(addon_dir: Path, wheel_directory: Path, editable: bool) -> str:
             editable_addon_symlink = editable_addons_dir / addon_name
             editable_addon_symlink.symlink_to(addon_dir, target_is_directory=True)
             # Add .pth file pointing to {addon_dir}/build/__editable__ into the wheel
-            tmppath.joinpath(metadata["Name"] + ".pth").write_text(
-                str(editable_dir.resolve())
-            )
+            tmppath.joinpath(
+                _normalize_dist_name(metadata["Name"]) + ".pth"
+            ).write_text(str(editable_dir.resolve()))
         else:
             odoo_addon_path = tmppath / "odoo" / "addons"
             odoo_addon_path.mkdir(parents=True)

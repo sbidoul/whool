@@ -29,21 +29,24 @@ jobs:
             machine: ubuntu-22.04
           - python-version: "3.13"
             machine: ubuntu-latest
+          - python-version: "3.14"
+            machine: ubuntu-latest
           # windows
           - python-version: "3.7"
             machine: windows-latest
-          - python-version: "3.13"
+          - python-version: "3.14"
             machine: windows-latest
           # mac
           - python-version: "3.7"
             machine: macos-13
-          - python-version: "3.13"
+          - python-version: "3.14"
             machine: macos-latest
     steps:
       - uses: "actions/checkout@v4"
       - uses: "actions/setup-python@v5"
         with:
           python-version: "${{ matrix.python-version }}"
+          allow-prereleases: true
       - name: "Install dependencies"
         run: |
           python -VV

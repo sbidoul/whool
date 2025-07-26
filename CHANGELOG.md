@@ -1,3 +1,10 @@
+## [v1.3](https://github.com/sbidoul/whool/tree/1.3) - 2025-07-26
+
+### Bugfixes
+
+- Normalize wheel name, sdist name, .dist-info directory name and editable .pth file name. ([#32](https://github.com/sbidoul/whool/issues/32))
+
+
 ## [v1.2](https://github.com/sbidoul/whool/tree/v1.1.1) - 2024-07-25
 
 

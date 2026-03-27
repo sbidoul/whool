@@ -53,6 +53,7 @@ The following options can be set in `pyproject.toml`:
 [tool.whool]
 depends_override = {}
 external_dependencies_override = {}
+additional_dependencies = []
 post_version_strategy_override = "..."
 odoo_series_override = "..."
 ```

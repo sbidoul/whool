@@ -31,15 +31,17 @@ jobs:
             machine: ubuntu-latest
           - python-version: "3.14"
             machine: ubuntu-latest
+          - python-version: "3.15"
+            machine: ubuntu-latest
           # windows
           - python-version: "3.7"
             machine: windows-latest
-          - python-version: "3.14"
+          - python-version: "3.15"
             machine: windows-latest
           # mac
           - python-version: "3.7"
             machine: macos-13
-          - python-version: "3.14"
+          - python-version: "3.15"
             machine: macos-latest
     steps:
       - uses: "actions/checkout@v7"

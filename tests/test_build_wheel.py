@@ -52,3 +52,22 @@ def test_build_wheel_git_missing(
         "WHOOL_POST_VERSION_STRATEGY_OVERRIDE", POST_VERSION_STRATEGY_NONE
     )
     test_build_wheel_without_scm(tmp_path)
+
+
+def test_build_wheel_stdlib_module_name(tmp_path: Path) -> None:
+    addon_dir = tmp_path / "addon1"
+    addon_dir.mkdir()
+    addon_dir.joinpath("__manifest__.py").write_text(
+        "{'name': 'addon1', 'version': '16.0.1.0.0'}"
+    )
+    addon_dir.joinpath("__init__.py").touch()
+    addon_dir.joinpath("types.py").write_text("X = 1\n")
+    addon_dir.joinpath("wheel.py").write_text("raise SystemExit(1)\n")
+    init_addon_dir(addon_dir)
+    wheel_path = tmp_path / "wheel"
+    wheel_path.mkdir()
+    with dir_changer(addon_dir):
+        wheel_name = build_wheel(os.fspath(wheel_path))
+    with ZipFile(wheel_path / wheel_name) as zf:
+        assert "odoo/addons/addon1/types.py" in zf.namelist()
+        assert "odoo/addons/addon1/wheel.py" in zf.namelist()

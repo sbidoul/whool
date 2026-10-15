@@ -144,6 +144,7 @@ def _get_metadata(addon_dir: Path) -> Message:
 
 
 def _build_wheel(addon_dir: Path, wheel_directory: Path, editable: bool) -> str:
+    wheel_directory = wheel_directory.resolve()
     metadata = _get_metadata(addon_dir)
     addon_name = distribution_name_to_addon_name(metadata["Name"])
     with tempfile.TemporaryDirectory() as tmpdir:
@@ -186,6 +187,8 @@ def _build_wheel(addon_dir: Path, wheel_directory: Path, editable: bool) -> str:
                 tmpdir,
             ],
             check=True,
+            # not in the addon dir, where -m would import e.g. a types.py of the addon
+            cwd=tmpdir,
         )
     return _get_wheel_name(metadata)
 

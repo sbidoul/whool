@@ -1,0 +1,1 @@
+Fix building addons that contain a module named like a stdlib module, such as ``types.py``.

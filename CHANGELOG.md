@@ -1,3 +1,10 @@
+## [v1.3.1](https://github.com/sbidoul/whool/tree/1.3.1) - 2026-10-15
+
+### Bugfixes
+
+- Fix building addons that contain a module named like a stdlib module, such as ``types.py``. ([#25](https://github.com/sbidoul/whool/issues/25))
+
+
 ## [v1.3](https://github.com/sbidoul/whool/tree/1.3) - 2025-07-26
 
 ### Bugfixes
